@@ -758,6 +758,30 @@ function handle(p) {
   /* ---------- 3. hand out a paper, WITHOUT the answers ---------- */
   if (p.action === 'start') {
     if (!tokenValid(email, p.token)) return { ok: false, error: 'Session not recognised.' };
+
+    /* If a paper was issued moments ago and never submitted, the reply was
+       probably lost and the browser retried. Hand back the SAME paper rather
+       than spending the person's one attempt on a network blip. Older unsubmitted
+       papers are treated as a real abandoned run. */
+    const RESUME_MINUTES = 20;
+    const srows = sessionsTab().getDataRange().getValues();
+    for (let i = srows.length - 1; i >= 1; i--) {
+      if (String(srows[i][1]).toLowerCase() === email && String(srows[i][4]) === 'no') {
+        const age = (Date.now() - new Date(srows[i][3]).getTime()) / 60000;
+        if (age <= RESUME_MINUTES) {
+          const again = paperFromSeed(Number(srows[i][2]));
+          if (again) {
+            return {
+              ok: true,
+              session: String(srows[i][0]),
+              qs: again.map(function (q) { return { s: q.s, d: q.d, t: q.t, q: q.q, o: q.o }; })
+            };
+          }
+        }
+        break;
+      }
+    }
+
     const spentS = attemptSpent(email);
     if (spentS) return { ok: false, error: spentS };
     const seed    = Math.floor(Math.random() * 2000000000) - 1000000000;
