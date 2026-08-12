@@ -1,7 +1,8 @@
-/* Aptitude test — complete Apps Script backend.
-   Paste this whole file into your Apps Script editor, replacing everything.
+/* Aptitude test - complete Apps Script backend.
+   Paste this whole file into the Apps Script editor, replacing everything.
    Change ADMIN_KEY below, then Deploy > Manage deployments > pencil > New version.
-   The question engine lives here so the browser never sees the answers. */
+   The question engine lives here so the browser never sees the answers.
+   Paper mix: 30% easy, 40% medium, 30% hard, no question family more than twice. */
 
 /* Shared question engine. Loaded by both index.html (the test) and
    admin.html (the dashboard). A paper is a pure function of its seed, so
@@ -368,26 +369,195 @@ function handshakes(){
     `Each of the ${n} people shakes ${n-1} hands, but that counts every handshake twice. ${n} \u00D7 ${n-1} \u00F7 2 = ${ans}.`);
 }];
 
+
+/* ============ EASY TIER ============ */
+const EASY_ANALOGIES = [
+  ["DOCTOR","HOSPITAL","TEACHER","School",["Student","Book","Lesson"]],
+  ["BIRD","NEST","BEE","Hive",["Honey","Flower","Wing"]],
+  ["PEN","WRITE","KNIFE","Cut",["Sharp","Kitchen","Metal"]],
+  ["SHOE","FOOT","GLOVE","Hand",["Wool","Winter","Finger"]],
+  ["THIRSTY","DRINK","TIRED","Sleep",["Rest","Yawn","Bed"]],
+  ["PUPPY","DOG","KITTEN","Cat",["Pet","Fur","Milk"]],
+  ["CHAPTER","BOOK","SCENE","Play",["Actor","Stage","Story"]],
+  ["CLOCK","TIME","THERMOMETER","Temperature",["Heat","Mercury","Weather"]]
+];
+const EASYGEN = [
+
+function simpleProgression(){
+  const geo = RND() < 0.4;
+  const start = ri(2,9);
+  if (geo){
+    const r = ri(2,3), t = [start];
+    for (let i=0;i<4;i++) t.push(t[t.length-1]*r);
+    const ans = t[4]*r;
+    return mk("Numerical & pattern", 70,
+      `What comes next? &nbsp;<span class="seq">${t.join(", ")}, ___</span>`,
+      ans, [ans+r, ans-r, t[4]+r, ans*2],
+      `Each term is the one before it multiplied by ${r}. ${t[4]} \u00D7 ${r} = ${ans}.`);
+  }
+  const d = ri(3,12), t = [start];
+  for (let i=0;i<4;i++) t.push(t[t.length-1]+d);
+  const ans = t[4]+d;
+  return mk("Numerical & pattern", 60,
+    `What comes next? &nbsp;<span class="seq">${t.join(", ")}, ___</span>`,
+    ans, [ans+d, ans-1, ans+1, ans+d+1],
+    `Each term rises by ${d}. ${t[4]} + ${d} = ${ans}.`);
+},
+
+function percentOf(){
+  const p = pick([5,10,15,20,25,40,60,75]), base = pick([120,240,300,360,480,600,800]);
+  const ans = base*p/100;
+  if (ans % 1 !== 0) return null;
+  return mk("Numerical & pattern", 60,
+    `What is ${p}% of ${base}?`,
+    ans, [base*(p+5)/100, base*(p-5)/100, ans+10, ans/2],
+    `${p}% of ${base} is ${base} \u00D7 ${p/100} = ${ans}.`);
+},
+
+function discountPrice(){
+  const price = pick([1200,1500,2400,3000,4500,6000]), off = pick([10,20,25,30,40]);
+  const ans = price*(100-off)/100;
+  return mk("Numerical & pattern", 70,
+    `An item priced at ${price} is reduced by ${off}%. What does it cost now?`,
+    ans, [price*off/100, ans - price*0.05, ans + price*0.05, price - off],
+    `${off}% off leaves ${100-off}% of the price: ${price} \u00D7 ${(100-off)/100} = ${ans}.`);
+},
+
+function averageMissing(){
+  const n = ri(4,5), avg = pick([20,25,30,40,50]);
+  const parts = [];
+  for (let i=0;i<n-1;i++) parts.push(avg + ri(-8,8));
+  const ans = avg*n - parts.reduce((a,b)=>a+b,0);
+  if (ans < 1) return null;
+  return mk("Numerical & pattern", 75,
+    `The average of ${n} numbers is ${avg}. ${n-1} of them are ${parts.join(", ")}. What is the last number?`,
+    ans, [ans+ri(3,9), ans-ri(3,9), avg, ans+avg],
+    `The ${n} numbers must total ${avg} \u00D7 ${n} = ${avg*n}. The known ones add to ${parts.reduce((a,b)=>a+b,0)}, so the last is ${ans}.`);
+},
+
+function ratioSplit(){
+  const a = ri(2,5), b = ri(2,7), unit = pick([100,200,300,500]);
+  if (a === b) return null;
+  const total = (a+b)*unit, big = Math.max(a,b)*unit;
+  return mk("Numerical & pattern", 75,
+    `${total} is split between two people in the ratio ${a}:${b}. How much does the larger share come to?`,
+    big, [Math.min(a,b)*unit, total/2, big+unit, big-unit],
+    `The ratio has ${a+b} parts, so one part is ${total} \u00F7 ${a+b} = ${unit}. The larger share is ${Math.max(a,b)} parts, or ${big}.`);
+},
+
+function speedTime(){
+  const speed = pick([40,50,60,70,80,90]), hours = ri(2,6);
+  const dist = speed*hours;
+  return mk("Numerical & pattern", 70,
+    `A van covers ${dist} km in ${hours} hours. What is its average speed?`,
+    `${speed} km/h`, [`${speed+10} km/h`, `${speed-10} km/h`, `${Math.round(dist/(hours+1))} km/h`, `${dist} km/h`],
+    `Speed is distance divided by time: ${dist} \u00F7 ${hours} = ${speed} km/h.`);
+},
+
+function dayAhead(){
+  const days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+  const start = ri(0,6), ahead = pick([10,16,23,30,45,52,60,100]);
+  const ans = days[(start + ahead) % 7];
+  const wrong = [days[(start+ahead+1)%7], days[(start+ahead-1)%7], days[(start+ahead+2)%7], days[start]];
+  return mk("Logical deduction", 75,
+    `If today is ${days[start]}, what day of the week will it be in ${ahead} days?`,
+    ans, wrong,
+    `${ahead} \u00F7 7 leaves a remainder of ${ahead % 7}, so count ${ahead % 7} day${ahead%7===1?"":"s"} on from ${days[start]} to reach ${ans}.`);
+},
+
+function multipleOdd(){
+  const base = pick([3,4,6,7,8,9]);
+  const good = [];
+  while (good.length < 4){
+    const v = base * ri(3,15);
+    if (good.indexOf(v) < 0) good.push(v);
+  }
+  let bad = base * ri(3,15) + ri(1, base-1);
+  if (good.indexOf(bad) > -1) return null;
+  const set = shuffle(good.concat([bad]));
+  return mk("Lateral & verbal", 60,
+    `Which of these is <em>not</em> a multiple of ${base}? &nbsp;<span class="seq">${set.join(", ")}</span>`,
+    bad, good,
+    `${bad} \u00F7 ${base} leaves a remainder of ${bad % base}. Every other number divides exactly.`);
+},
+
+function easyAnalogy(){
+  const A = pick(EASY_ANALOGIES);
+  return mk("Lateral & verbal", 60,
+    `${A[0]} is to ${A[1]} as ${A[2]} is to:`,
+    A[3], A[4],
+    `${A[0].charAt(0)+A[0].slice(1).toLowerCase()} belongs with ${A[1].toLowerCase()} in the same way that ${A[2].toLowerCase()} belongs with ${A[3].toLowerCase()}.`);
+},
+
+function simpleOdds(){
+  const r = ri(2,6), b = ri(3,8);
+  const tot = r+b;
+  const c = shuffle(["red","blue","green","yellow"]);
+  return mk("Probability & quantitative", 70,
+    `A box holds ${r} ${c[0]} balls and ${b} ${c[1]} balls. One is taken at random. What is the probability it is ${c[0]}?`,
+    frac(r,tot), [frac(b,tot), frac(r,b), frac(1,tot), frac(r,tot+2)],
+    `${r} of the ${tot} balls are ${c[0]}, so the probability is ${frac(r,tot)}.`);
+},
+
+function evenSteps(){
+  const start = ri(2,8), step = ri(2,6), miss = ri(1,3);
+  const t = [start];
+  for (let i=0;i<4;i++) t.push(t[t.length-1]+step);
+  const ans = t[miss];
+  const shown = t.map(function(v,idx){ return idx === miss ? "__" : v; });
+  return mk("Numerical & pattern", 60,
+    `Which number is missing? &nbsp;<span class="seq">${shown.join(", ")}</span>`,
+    ans, [ans+step, ans-step, ans+1, ans-1],
+    `The series climbs by ${step} each time, so the gap must be ${ans}.`);
+}
+];
+
 /* ============ PAPER ASSEMBLY ============ */
-const PLAN = [["Numerical & pattern",NUM,5],["Logical deduction",LOG,6],["Probability & quantitative",QUANT,4],["Lateral & verbal",LAT,5]];
+/* Rules: every question comes from a different generator, no question
+   FAMILY appears more than twice in one paper, and the mix is graded
+   30% easy / 40% medium / 30% hard. Hard is allocated first so it keeps
+   its variety, then medium, then easy; the paper is shown easiest first. */
+
+const HARDGEN = [NUM[0], NUM[1], LOG[1], LOG[2], LOG[5], LOG[6], QUANT[1], LAT[0]];
+const HARDFAM = ["series","series","liars","wason","falsify","ordering","cube","ropes"];
+
+const MEDGEN  = [NUM[2], NUM[3], NUM[4], NUM[5], LOG[0], LOG[3], LOG[4],
+                 QUANT[0], QUANT[2], QUANT[3], QUANT[4], QUANT[5],
+                 LAT[1], LAT[2], LAT[3], LAT[4], LAT[5], LAT[6]];
+const MEDFAM  = ["series","percent","rate","series","sets","syllogism","queue",
+                 "prob","clock","prob","rate","percent",
+                 "oddoneout","analogy","doubling","costtrap","socks","handshakes"];
+
+const EASYFAM = ["series","percent","percent","average","ratio","speed",
+                 "calendar","multiple","analogy","prob","series"];
+
+const FAMILY_CAP = 2;
 
 function buildPaper(){
-  const out = [];
-  for (const row of PLAN){
-    const gens = row[1], count = row[2], chosen = [];
-    let guard = 0;
-    while (chosen.length < count && guard++ < 500){
-      const gi = Math.floor(RND()*gens.length);
-      if (chosen.filter(c => c._g === gi).length >= 2) continue;
-      const q = gens[gi]();
+  const picked = { Easy: [], Medium: [], Hard: [] };
+  const famUsed = {};
+  const tiers = [["Hard", HARDGEN, HARDFAM, 6],
+                 ["Medium", MEDGEN, MEDFAM, 8],
+                 ["Easy", EASYGEN, EASYFAM, 6]];
+
+  for (const tier of tiers){
+    const label = tier[0], pool = tier[1], fams = tier[2], count = tier[3];
+    const order = shuffle(pool.map(function(_, i){ return i; }));
+    let taken = 0;
+    for (let k = 0; k < order.length && taken < count; k++){
+      const gi = order[k], fam = fams[gi];
+      if ((famUsed[fam] || 0) >= FAMILY_CAP) continue;
+      let q = null, attempt = 0;
+      while (!q && attempt++ < 25) q = pool[gi]();
       if (!q) continue;
-      q._g = gi;
-      chosen.push(q);
+      q.d = label;
+      famUsed[fam] = (famUsed[fam] || 0) + 1;
+      picked[label].push(q);
+      taken++;
     }
-    if (chosen.length < count) return null;
-    out.push.apply(out, chosen);
+    if (taken < count) return null;
   }
-  return out;
+  return picked.Easy.concat(picked.Medium, picked.Hard);
 }
 
 /* Rebuild the exact paper a candidate sat, from its seed. */
@@ -469,7 +639,7 @@ function markPaper(seed, ansStr, timesStr) {
     const given = (ans[i] === '-' || ans[i] === undefined) ? null : Number(ans[i]);
     const ok = given === q.a;
     if (ok) raw++;
-    return { s:q.s, q:q.q, o:q.o, a:q.a, w:q.w, t:q.t, given:given, ok:ok, spent:(times[i] || 0) };
+    return { s:q.s, d:q.d, q:q.q, o:q.o, a:q.a, w:q.w, t:q.t, given:given, ok:ok, spent:(times[i] || 0) };
   });
   return { raw: raw, review: review, total: paper.length };
 }
