@@ -267,17 +267,16 @@ document.addEventListener("visibilitychange", ()=>{ if (document.hidden) flagAwa
 window.addEventListener("blur", flagAway);
 
 function jsonp(params){
-  return new Promise((resolve, reject)=>{
-    const cb = "cb" + Math.random().toString(36).slice(2,9);
-    const s = document.createElement("script");
-    let done = false;
-    window[cb] = d => { done = true; try{delete window[cb];}catch(e){} s.remove(); resolve(d); };
-    s.onerror = () => { if(done) return; try{delete window[cb];}catch(e){} s.remove(); reject(new Error("network")); };
-    const qs = Object.keys(params).map(k => encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join("&");
-    s.src = VERIFY_ENDPOINT + "?callback=" + cb + "&" + qs;
-    document.body.appendChild(s);
-    setTimeout(()=>{ if(!done){ try{delete window[cb];}catch(e){} s.remove(); reject(new Error("timeout")); } }, 75000);
-  });
+  const base = (typeof VERIFY_ENDPOINT !== "undefined") ? VERIFY_ENDPOINT : ENDPOINT;
+  const qs = Object.keys(params).map(k => encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join("&");
+  return fetch(base + "?callback=cb&" + qs, { method:"GET", redirect:"follow" })
+    .then(r => r.text())
+    .then(t => {
+      const s = String(t).trim();
+      const i = s.indexOf("("), j = s.lastIndexOf(")");
+      const body = (i > -1 && j > i) ? s.slice(i+1, j) : s;
+      return JSON.parse(body);
+    });
 }
 
 $("sendCode").onclick = () => {
@@ -315,7 +314,7 @@ $("checkCode").onclick = async () => {
       $("privacyNote").textContent = "Recorded against " + email;
       err.textContent = "";
     } else err.textContent = ((r && r.error) || "That code did not match.").toUpperCase();
-  }catch(e){ err.textContent = "NO RESPONSE. DISABLE ANY AD BLOCKER FOR THIS PAGE AND TRY AGAIN."; }
+  }catch(e){ err.textContent = "FAILED: " + (e && e.message ? e.message : e); }
   $("checkCode").disabled = false;
 };
 
