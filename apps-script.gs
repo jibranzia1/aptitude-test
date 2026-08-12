@@ -706,6 +706,56 @@ function replayResult(email, session, seed) {
   return { ok: false, error: 'This paper was already submitted.' };
 }
 
+
+/* ============ INTEGRITY SIGNALS ============
+   None of these prove anything on their own. Together they tell you which
+   papers are worth asking about in the follow-up conversation. Read them as
+   questions to put to a candidate, never as a verdict. */
+
+function integritySignals(review, switches, copies) {
+  const easy = review.filter(function (q) { return q.d === 'Easy'; });
+  const hard = review.filter(function (q) { return q.d === 'Hard'; });
+  const pct  = function (a) { return a.length ? a.filter(function (q) { return q.ok; }).length / a.length : 0; };
+
+  const easyPct = pct(easy), hardPct = pct(hard);
+  const times   = review.map(function (q) { return q.spent; });
+  const mean    = times.reduce(function (a, b) { return a + b; }, 0) / (times.length || 1);
+  const sd      = Math.sqrt(times.reduce(function (a, t) { return a + (t - mean) * (t - mean); }, 0) / (times.length || 1));
+  const timedOut = review.filter(function (q) { return q.given === null; }).length;
+
+  /* hard questions answered correctly in the window a lookup takes */
+  const lookupBand = hard.filter(function (q) { return q.ok && q.spent >= 15 && q.spent <= 32; }).length;
+
+  const flags = [];
+  if (hardPct >= 0.75 && hardPct > easyPct + 0.15) {
+    flags.push('Scored higher on hard than easy questions, which reverses the normal pattern');
+  }
+  if (timedOut === 0 && hardPct >= 0.7) {
+    flags.push('Answered every question in time while scoring well on the hard tier');
+  }
+  if (sd < 7 && review.length > 5) {
+    flags.push('Spent almost the same time on every question regardless of difficulty');
+  }
+  if (lookupBand >= 3) {
+    flags.push(lookupBand + ' hard questions answered correctly in the 15 to 32 second band');
+  }
+  if (copies > 0) {
+    flags.push(copies + ' blocked attempt' + (copies > 1 ? 's' : '') + ' to copy the questions');
+  }
+  if (switches > 0) {
+    flags.push('Left the tab ' + switches + ' time' + (switches > 1 ? 's' : ''));
+  }
+
+  return {
+    flags: flags,
+    easyPct: Math.round(easyPct * 100),
+    hardPct: Math.round(hardPct * 100),
+    spread: Math.round(sd * 10) / 10,
+    timedOut: timedOut,
+    lookupBand: lookupBand
+  };
+}
+
 function handle(p) {
   const email = String(p.email || '').toLowerCase().trim();
 
@@ -840,10 +890,13 @@ function handle(p) {
     for (let i = 1; i < data.length; i++) {
       const r = data[i];
       const b = bandFor(Number(r[2]));
+      const mk2 = markPaper(r[9], r[10], r[11]);
+      const sig = mk2 ? integritySignals(mk2.review, Number(r[6]), Number(r[7])) : { flags: [] };
       out.push({ id: i, when: new Date(r[0]).toISOString(), email: r[1],
                  score: r[2], total: r[3], raw: r[4], penalty: r[5],
                  switches: r[6], copies: r[7], time: r[8], seed: r[9],
-                 band: b[1] });
+                 band: b[1], flags: sig.flags, easyPct: sig.easyPct,
+                 hardPct: sig.hardPct, spread: sig.spread, timedOut: sig.timedOut });
     }
     return { ok: true, rows: out };
   }
@@ -858,10 +911,11 @@ function handle(p) {
     const marked = markPaper(r[9], r[10], r[11]);
     if (!marked) return { ok: false, error: 'Could not rebuild the paper.' };
     const b = bandFor(Number(r[2]));
+    const sig = integritySignals(marked.review, Number(r[6]), Number(r[7]));
     return { ok: true, email: r[1], when: new Date(r[0]).toISOString(),
              score: r[2], total: r[3], raw: r[4], penalty: r[5],
              switches: r[6], copies: r[7], time: r[8], seed: r[9],
-             band: [b[1], b[2]], review: marked.review };
+             band: [b[1], b[2]], review: marked.review, signals: sig };
   }
 
   return { ok: false, error: 'Unknown action.' };
