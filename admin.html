@@ -155,7 +155,7 @@ function jsonp(params){
     const qs = Object.keys(params).map(k => encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join("&");
     s.src = ENDPOINT + "?callback=" + cb + "&" + qs;
     document.body.appendChild(s);
-    setTimeout(()=>{ if(!done){ try{delete window[cb];}catch(e){} s.remove(); reject(new Error("timeout")); } }, 20000);
+    setTimeout(()=>{ if(!done){ try{delete window[cb];}catch(e){} s.remove(); reject(new Error("timeout")); } }, 75000);
   });
 }
 
@@ -166,7 +166,7 @@ const tone = b => b[3] === "var(--verd)" ? "var(--olive)" : b[3] === "var(--bras
 $("open").onclick = async () => {
   adminKey = $("key").value.trim();
   if (!adminKey){ $("keyErr").textContent = "ENTER THE ADMIN KEY"; return; }
-  $("keyErr").textContent = "LOADING...";
+  $("keyErr").textContent = "LOADING... FIRST LOAD CAN BE SLOW";
   await load();
 };
 $("key").addEventListener("keydown", e => { if (e.key === "Enter") $("open").click(); });
@@ -182,7 +182,7 @@ async function load(){
     $("list").classList.remove("hide");
     $("sub").textContent = rows.length + " completed";
     render();
-  }catch(e){ $("keyErr").textContent = "COULD NOT REACH THE SERVICE"; }
+  }catch(e){ $("keyErr").textContent = "NO RESPONSE. DISABLE ANY AD BLOCKER FOR THIS PAGE AND TRY AGAIN."; }
 }
 
 function render(){
