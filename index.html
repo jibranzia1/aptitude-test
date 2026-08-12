@@ -3,163 +3,87 @@
 <title>Aptitude &amp; Reasoning Test</title>
 <style>
   :root{
-    --ink:#10151C;
-    --slate:#1B2430;
-    --steel:#2C3847;
-    --paper:#ECEAE4;
-    --mute:#8A94A3;
-    --brass:#C08A2E;
-    --signal:#C4553B;
-    --verd:#4E8C7D;
+    --ink:#10151C; --slate:#1B2430; --steel:#2C3847; --paper:#ECEAE4;
+    --mute:#8A94A3; --brass:#C08A2E; --signal:#C4553B; --verd:#4E8C7D;
     --mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
     --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
-  body{
-    background:var(--ink);
-    color:var(--paper);
-    font-family:var(--sans);
-    line-height:1.5;
-    -webkit-font-smoothing:antialiased;
-    padding:24px 16px 64px;
-  }
+  body{background:var(--ink);color:var(--paper);font-family:var(--sans);line-height:1.5;
+    -webkit-font-smoothing:antialiased;padding:24px 16px 64px}
   .wrap{max-width:860px;margin:0 auto}
-  .eyebrow{
-    font-family:var(--mono);
-    font-size:11px;
-    letter-spacing:.18em;
-    text-transform:uppercase;
-    color:var(--brass);
-  }
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass)}
   .rule{height:1px;background:var(--steel);border:0;margin:20px 0}
   .muted{color:var(--mute)}
-  h1{
-    font-family:var(--mono);
-    font-size:clamp(22px,4.4vw,32px);
-    letter-spacing:-.01em;
-    margin:6px 0 4px;
-    font-weight:600;
-  }
-  .panel{
-    background:var(--slate);
-    border:1px solid var(--steel);
-    border-radius:2px;
-    padding:24px;
-  }
+  h1{font-family:var(--mono);font-size:clamp(22px,4.4vw,32px);letter-spacing:-.01em;margin:6px 0 4px;font-weight:600}
+  .panel{background:var(--slate);border:1px solid var(--steel);border-radius:2px;padding:24px}
   button{font-family:inherit}
-  .btn{
-    background:var(--brass);
-    color:var(--ink);
-    border:0;
-    border-radius:2px;
-    padding:13px 26px;
-    font-family:var(--mono);
-    font-size:13px;
-    letter-spacing:.12em;
-    text-transform:uppercase;
-    cursor:pointer;
-    transition:filter .15s ease;
-  }
+  .btn{background:var(--brass);color:var(--ink);border:0;border-radius:2px;padding:13px 26px;
+    font-family:var(--mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:filter .15s ease}
   .btn:hover:not(:disabled){filter:brightness(1.12)}
   .btn:disabled{background:var(--steel);color:var(--mute);cursor:not-allowed}
-  .btn.ghost{
-    background:transparent;
-    color:var(--mute);
-    border:1px solid var(--steel);
-  }
+  .btn.ghost{background:transparent;color:var(--mute);border:1px solid var(--steel)}
   .btn.ghost:hover{color:var(--paper);border-color:var(--mute);filter:none}
   :focus-visible{outline:2px solid var(--brass);outline-offset:3px}
   .rules{list-style:none;padding:0;margin:0}
-  .rules li{
-    display:flex;gap:14px;
-    padding:11px 0;
-    border-bottom:1px solid var(--steel);
-    font-size:14.5px;
-  }
+  .rules li{display:flex;gap:14px;padding:11px 0;border-bottom:1px solid var(--steel);font-size:14.5px}
   .rules li:last-child{border-bottom:0}
-  .rules span{
-    font-family:var(--mono);font-size:11px;color:var(--brass);
-    padding-top:3px;min-width:20px;
-  }
+  .rules span{font-family:var(--mono);font-size:11px;color:var(--brass);padding-top:3px;min-width:20px}
   .field{margin:22px 0 20px}
-  label{
-    display:block;font-family:var(--mono);font-size:11px;
-    letter-spacing:.16em;text-transform:uppercase;color:var(--mute);
-    margin-bottom:8px;
-  }
-  input[type=text]{
-    width:100%;background:var(--ink);border:1px solid var(--steel);
-    color:var(--paper);padding:13px 14px;font-size:16px;
-    font-family:var(--sans);border-radius:2px;
-  }
-  input[type=text]:focus{border-color:var(--brass);outline:none}
+  label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--mute);margin-bottom:8px}
+  input[type=text],input[type=email]{width:100%;background:var(--ink);border:1px solid var(--steel);
+    color:var(--paper);padding:13px 14px;font-size:16px;font-family:var(--sans);border-radius:2px}
+  input:focus{border-color:var(--brass);outline:none}
+  input.code{font-family:var(--mono);font-size:24px;letter-spacing:.5em;text-align:center}
+  .err{color:var(--signal);font-size:13px;margin-top:10px;min-height:18px}
+  .ok{color:var(--verd);font-size:13px;margin-top:10px;min-height:18px}
   .ticks{display:flex;gap:3px;margin-bottom:22px}
   .tick{flex:1;height:3px;background:var(--steel);border-radius:1px}
   .tick.done{background:var(--mute)}
   .tick.now{background:var(--brass)}
   .qgrid{display:grid;grid-template-columns:78px 1fr;gap:26px;align-items:start}
   .gauge{position:relative}
-  .gauge .clock{
-    font-family:var(--mono);font-size:27px;font-variant-numeric:tabular-nums;
-    letter-spacing:-.02em;line-height:1;
-  }
+  .gauge .clock{font-family:var(--mono);font-size:27px;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1}
   .gauge .unit{font-family:var(--mono);font-size:10px;color:var(--mute);letter-spacing:.16em;margin-top:5px}
-  .tube{
-    margin-top:14px;height:190px;width:8px;
-    background:var(--ink);border:1px solid var(--steel);border-radius:1px;
-    position:relative;overflow:hidden;
-  }
-  .fluid{
-    position:absolute;left:0;right:0;bottom:0;
-    background:var(--brass);
-    transition:height .25s linear, background-color .3s ease;
-  }
+  .tube{margin-top:14px;height:190px;width:8px;background:var(--ink);border:1px solid var(--steel);
+    border-radius:1px;position:relative;overflow:hidden}
+  .fluid{position:absolute;left:0;right:0;bottom:0;background:var(--brass);transition:height .3s linear, background-color .3s ease}
   .low .clock{color:var(--signal)}
   .low .fluid{background:var(--signal)}
   .low .tube{animation:pulse 1s ease-in-out infinite}
   @keyframes pulse{50%{border-color:var(--signal)}}
   .qnum{font-family:var(--mono);font-size:11px;color:var(--mute);letter-spacing:.14em;margin-bottom:14px}
-  .stem{
-    font-family:var(--serif);
-    font-size:clamp(17px,2.6vw,20px);
-    line-height:1.45;
-    margin:8px 0 22px;
-  }
+  .stem{font-family:var(--serif);font-size:clamp(17px,2.6vw,20px);line-height:1.45;margin:8px 0 22px}
   .stem .seq{font-family:var(--mono);letter-spacing:.04em}
   .opts{display:flex;flex-direction:column;gap:9px}
-  .opt{
-    display:flex;gap:14px;align-items:flex-start;
-    background:var(--ink);border:1px solid var(--steel);
-    color:var(--paper);border-radius:2px;
-    padding:14px 16px;text-align:left;font-size:15px;
-    cursor:pointer;width:100%;
-    transition:border-color .12s ease, background-color .12s ease;
-  }
+  .opt{display:flex;gap:14px;align-items:flex-start;background:var(--ink);border:1px solid var(--steel);
+    color:var(--paper);border-radius:2px;padding:14px 16px;text-align:left;font-size:15px;cursor:pointer;width:100%;
+    transition:border-color .12s ease, background-color .12s ease}
   .opt:hover{border-color:var(--mute)}
   .opt .ltr{font-family:var(--mono);font-size:12px;color:var(--brass);padding-top:2px}
   .opt.sel{border-color:var(--brass);background:#1F2A38}
   .foot{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:14px}
+  .alarm{background:#2A1A18;border:1px solid var(--signal);color:var(--signal);
+    font-size:13px;padding:11px 14px;border-radius:2px;margin-bottom:16px;font-family:var(--mono)}
   .score{display:flex;align-items:baseline;gap:12px;margin:4px 0 2px}
   .score b{font-family:var(--mono);font-size:64px;font-weight:600;line-height:1;letter-spacing:-.03em}
   .score i{font-family:var(--mono);font-style:normal;font-size:19px;color:var(--mute)}
   .band{font-family:var(--mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-top:6px}
   table{width:100%;border-collapse:collapse;font-size:14px}
-  th{
-    font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--mute);text-align:left;font-weight:400;
-    padding:9px 8px;border-bottom:1px solid var(--steel);
-  }
+  th{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);
+    text-align:left;font-weight:400;padding:9px 8px;border-bottom:1px solid var(--steel)}
   td{padding:10px 8px;border-bottom:1px solid var(--steel)}
   .rev{border-left:2px solid var(--steel);padding:12px 0 12px 16px;margin-bottom:14px}
-  .rev.ok{border-left-color:var(--verd)}
-  .rev.no{border-left-color:var(--signal)}
+  .rev.good{border-left-color:var(--verd)}
+  .rev.bad{border-left-color:var(--signal)}
   .rev h4{margin:0 0 7px;font-size:14.5px;font-weight:600;font-family:var(--serif)}
   .rev p{margin:4px 0;font-size:13.5px}
   .tag{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
-  .tag.ok{color:var(--verd)}
-  .tag.no{color:var(--signal)}
+  .tag.good{color:var(--verd)}
+  .tag.bad{color:var(--signal)}
   .why{color:var(--mute);font-size:13px}
   .hide{display:none}
   @media (max-width:560px){
@@ -171,27 +95,54 @@
     .foot{flex-direction:column-reverse;align-items:stretch}
     .foot .btn{width:100%}
   }
-  @media (prefers-reduced-motion:reduce){
-    *{animation:none!important;transition:none!important}
-  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
 <div class="wrap">
 
-  <section id="start">
+  <section id="gate" class="hide">
     <div class="eyebrow">Internal Assessment</div>
+    <h1>Verify your identity</h1>
+    <p class="muted" style="margin-top:0">Use your company email address. A one-time code will be sent to it.</p>
+    <hr class="rule">
+    <div class="panel">
+      <div id="stepEmail">
+        <div class="field">
+          <label for="mail">Company email</label>
+          <input id="mail" type="email" placeholder="you@firstmfg.com" autocomplete="email">
+        </div>
+        <div class="err" id="mailErr"></div>
+        <div class="foot" style="margin-top:8px"><span></span>
+          <button class="btn" id="sendCode">Send code</button></div>
+      </div>
+      <div id="stepCode" class="hide">
+        <div class="field">
+          <label for="code">Six-digit code</label>
+          <input id="code" class="code" type="text" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code">
+        </div>
+        <div class="err" id="codeErr"></div>
+        <div class="foot" style="margin-top:8px">
+          <button class="btn ghost" id="backEmail">Use another email</button>
+          <button class="btn" id="checkCode">Verify</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="start" class="hide">
+    <div class="eyebrow" id="whoStart">Internal Assessment</div>
     <h1>Aptitude &amp; Reasoning Test</h1>
     <p class="muted" style="margin-top:0">20 questions &middot; one at a time &middot; each with its own countdown</p>
     <hr class="rule">
     <div class="panel">
       <ul class="rules">
-        <li><span>01</span><div>Each question has its own time limit, shown on the left. When it runs out the test moves on by itself.</div></li>
-        <li><span>02</span><div>You cannot go back. Answer, then continue.</div></li>
-        <li><span>03</span><div>An unanswered question scores zero. A wrong answer costs nothing extra, so commit to your best option before time runs out.</div></li>
-        <li><span>04</span><div>No calculator, no phone. Pen and paper for rough work is fine.</div></li>
-        <li><span>05</span><div>Your score and full solutions appear the moment you finish.</div></li>
+        <li><span>01</span><div>Your paper is generated fresh. Nobody else gets the same 20 questions, and neither will you if you sit it again.</div></li>
+        <li><span>02</span><div>Each question has its own time limit, shown on the left. When it runs out the test moves on by itself.</div></li>
+        <li><span>03</span><div>You cannot go back. Answer, then continue.</div></li>
+        <li><span>04</span><div><b style="color:var(--signal)">Leaving this tab or window costs you a point each time.</b> The clock keeps running while you are away.</div></li>
+        <li><span>05</span><div>No calculator, no phone. Pen and paper for rough work is fine.</div></li>
+        <li><span>06</span><div>Your score and full worked solutions appear the moment you finish.</div></li>
       </ul>
-      <div class="field">
+      <div class="field" id="nameField">
         <label for="who">Your name</label>
         <input id="who" type="text" placeholder="Type your full name" autocomplete="off">
       </div>
@@ -199,12 +150,13 @@
         <button class="btn ghost" id="viewResults">See all results</button>
         <button class="btn" id="go">Begin test</button>
       </div>
-      <p class="muted" style="font-size:12.5px;margin:16px 0 0">Your name, score and answers are recorded for the assessment.</p>
+      <p class="muted" style="font-size:12.5px;margin:16px 0 0" id="privacyNote">Your name, score and answers are recorded for the assessment.</p>
     </div>
   </section>
 
   <section id="quiz" class="hide">
     <div class="ticks" id="ticks"></div>
+    <div class="alarm hide" id="alarm"></div>
     <div class="panel">
       <div class="qgrid">
         <div class="gauge" id="gauge">
@@ -230,15 +182,16 @@
     <div class="eyebrow" id="whoDone"></div>
     <h1>Result</h1>
     <div class="panel">
-      <div class="score"><b id="pts">0</b><i>/ 20 correct</i></div>
+      <div class="score"><b id="pts">0</b><i id="ptsOf">/ 20</i></div>
       <div class="band" id="band"></div>
+      <div class="muted" style="font-size:13px;margin-top:10px" id="penaltyLine"></div>
       <hr class="rule">
       <table>
         <thead><tr><th>Section</th><th style="text-align:right">Score</th><th style="text-align:right">Time used</th></tr></thead>
         <tbody id="secTable"></tbody>
       </table>
       <div class="foot">
-        <button class="btn ghost" id="again">Take it again</button>
+        <button class="btn ghost" id="again">Take a fresh paper</button>
         <button class="btn ghost" id="toResults">See all results</button>
       </div>
     </div>
@@ -259,121 +212,525 @@
 </div>
 
 <script>
-const Q = [
- {s:"Numerical & pattern", t:100, q:'What comes next? &nbsp;<span class="seq">2, 12, 36, 80, 150, ___</span>',
-  o:["196","224","252","270"], a:2,
-  w:"Each term is n cubed plus n squared. 1+1=2, 8+4=12, 27+9=36, 64+16=80, 125+25=150, then 216+36 = 252."},
+/* ============ CONFIG ============
+   VERIFY_ENDPOINT: paste your Google Apps Script web-app URL to turn on
+   email verification and central result collection. Leave it empty and the
+   test runs with a plain name field, storing results in the local browser.
+   Setup steps are in the README. */
+const VERIFY_ENDPOINT = "";
+const ALLOWED_DOMAIN  = "firstmfg.com";
+const SWITCH_PENALTY  = 1;
 
- {s:"Numerical & pattern", t:120, q:'What comes next? &nbsp;<span class="seq">1, 11, 21, 1211, 111221, ___</span>',
-  o:["122111","312211","111222","212211"], a:1,
-  w:"Look-and-say. Each term reads the one before it aloud. 111221 is three 1s, two 2s, one 1, which gives 312211."},
+/* ============ SEEDED RANDOM ============ */
+function mulberry(seed){
+  return function(){
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+let RND = Math.random;
+const ri = (a,b) => a + Math.floor(RND()*(b-a+1));
+const pick = arr => arr[Math.floor(RND()*arr.length)];
+function shuffle(a){ const x=a.slice(); for(let i=x.length-1;i>0;i--){const j=Math.floor(RND()*(i+1));[x[i],x[j]]=[x[j],x[i]];} return x; }
+const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
- {s:"Numerical & pattern", t:90, q:'Which letter continues the series? &nbsp;<span class="seq">A, C, F, J, O, ___</span>',
-  o:["S","T","U","V"], a:2,
-  w:"Gaps grow by one: +2, +3, +4, +5, +6. Alphabet positions 1, 3, 6, 10, 15, 21. Position 21 is U."},
+function mk(section, time, stem, correct, wrongs, why){
+  const uniq = [];
+  for (const w of wrongs){
+    const s = String(w);
+    if (s === "undefined" || s === "null" || s === "NaN" || s === "") continue;
+    if (s !== String(correct) && !uniq.includes(s)) uniq.push(s);
+    if (uniq.length === 3) break;
+  }
+  if (uniq.length < 3) return null;
+  const opts = shuffle([String(correct), ...uniq]);
+  return { s:section, t:time, q:stem, o:opts, a:opts.indexOf(String(correct)), w:why };
+}
 
- {s:"Numerical & pattern", t:90, q:"Sales fell by 40% in Year 1. By what percentage must they rise in Year 2 to get back to the original level?",
-  o:["40%","50%","60%","About 67%"], a:3,
-  w:"100 drops to 60. Going from 60 back to 100 is a gain of 40 on a base of 60, which is 66.7%."},
+/* ============ NUMERICAL & PATTERN ============ */
+const NUM = [
+function polySeries(){
+  const k = ri(1,3), form = ri(0,2);
+  const f = n => form===0 ? n*n*n + k*n*n : form===1 ? n*n*n + k*n : n*n*n - k*n*n;
+  const desc = form===0 ? `n\u00B3 + ${k}n\u00B2` : form===1 ? `n\u00B3 + ${k}n` : `n\u00B3 \u2212 ${k}n\u00B2`;
+  const t = [1,2,3,4,5].map(f), ans = f(6);
+  return mk("Numerical & pattern", 100,
+    `What comes next? &nbsp;<span class="seq">${t.join(", ")}, ___</span>`,
+    ans, [ans+ri(6,20), ans-ri(6,20), t[4]+(t[4]-t[3]), ans+ri(21,40)],
+    `Each term is ${desc}. The sixth term is ${ans}.`);
+},
+function lookSay(){
+  const start = String(ri(1,3));
+  let seq = [start];
+  const next = s => { let o="",i=0; while(i<s.length){let j=i; while(j<s.length&&s[j]===s[i])j++; o+=(j-i)+s[i]; i=j;} return o; };
+  for (let i=0;i<4;i++) seq.push(next(seq[seq.length-1]));
+  const ans = next(seq[seq.length-1]);
+  const scramble = s => s.split("").sort(()=>RND()-0.5).join("");
+  return mk("Numerical & pattern", 120,
+    `What comes next? &nbsp;<span class="seq">${seq.join(", ")}, ___</span>`,
+    ans, [scramble(ans), scramble(ans), next(ans), seq[seq.length-1]+start],
+    `Look-and-say: each term reads the previous one aloud, digit group by digit group. Reading ${seq[seq.length-1]} gives ${ans}.`);
+},
+function letterSeries(){
+  const start = ri(0,4), g0 = ri(1,3);
+  const pos = [start]; let g = g0;
+  for (let i=0;i<5;i++){ pos.push(pos[pos.length-1]+g); g++; }
+  if (pos[5] > 23) return null;
+  const shown = pos.slice(0,5).map(p=>LETTERS[p]), ans = LETTERS[pos[5]];
+  return mk("Numerical & pattern", 90,
+    `Which letter continues the series? &nbsp;<span class="seq">${shown.join(", ")}, ___</span>`,
+    ans, [LETTERS[pos[5]-1], LETTERS[pos[5]+1], LETTERS[pos[5]-2], LETTERS[pos[5]+2]],
+    `The gaps grow by one each step: +${g0}, +${g0+1}, +${g0+2}, +${g0+3}, +${g0+4}. Alphabet positions ${pos.map(p=>p+1).join(", ")} give ${ans}.`);
+},
+function pctRecover(){
+  const d = pick([20,25,30,40,50,60,75,80]);
+  const rise = Math.round((d/(100-d))*1000)/10;
+  const fmt = v => (Math.round(v*10)/10) + "%";
+  return mk("Numerical & pattern", 90,
+    `Revenue fell by ${d}% in Year 1. By what percentage must it rise in Year 2 to get back to the original level?`,
+    fmt(rise), [fmt(d), fmt(d+10), fmt(100-d), fmt(Math.round(rise/2*10)/10)],
+    `100 falls to ${100-d}. Rising from ${100-d} back to 100 is a gain of ${d} on a base of ${100-d}, which is ${fmt(rise)}.`);
+},
+function machineRate(){
+  const per = pick([0.25,0.5,1,1.5,2]);
+  const m1 = ri(3,6), t1 = ri(4,10), u1 = per*m1*t1;
+  if (u1 % 1 !== 0) return null;
+  const m2 = ri(2,10), t2 = ri(3,12), u2 = per*m2*t2;
+  if (u2 % 1 !== 0 || m2 === m1) return null;
+  return mk("Numerical & pattern", 100,
+    `If ${m1} machines produce ${u1} units in ${t1} minutes, how long will ${m2} machines take to produce ${u2} units?`,
+    `${t2} minutes`,
+    [`${t1} minutes`, `${t2+ri(2,5)} minutes`, `${Math.max(1,t2-ri(2,5))} minutes`, `${t2*2} minutes`],
+    `One machine makes ${per} units per minute, so ${m2} machines make ${per*m2} per minute. ${u2} \u00F7 ${per*m2} = ${t2} minutes.`);
+},
+function altSeries(){
+  const a = ri(2,4), b = ri(1,9), start = ri(1,6);
+  const t = [start];
+  for (let i=0;i<4;i++) t.push(t[t.length-1]*a + b);
+  const ans = t[4]*a + b;
+  return mk("Numerical & pattern", 100,
+    `What comes next? &nbsp;<span class="seq">${t.join(", ")}, ___</span>`,
+    ans, [t[4]*a, ans+b, ans-b, t[4]+(t[4]-t[3])],
+    `Each term is the previous one multiplied by ${a}, then ${b} added. ${t[4]} \u00D7 ${a} + ${b} = ${ans}.`);
+}];
 
- {s:"Numerical & pattern", t:100, q:"If 4 machines produce 12 units in 6 minutes, how long will 8 machines take to produce 36 units?",
-  o:["6 minutes","9 minutes","12 minutes","18 minutes"], a:1,
-  w:"One machine makes 0.5 units per minute. Eight machines make 4 per minute. 36 divided by 4 is 9 minutes."},
+/* ============ LOGICAL DEDUCTION ============ */
+const NONSENSE = ["Bloops","Razzies","Lazzies","Grints","Fenns","Morvs","Tuvers","Plinks","Quorls","Snells"];
+const LOG = [
+function setOverlap(){
+  const N = pick([80,100,120,150,200]);
+  const a = Math.round(N*pick([0.6,0.65,0.7,0.75])), b = Math.round(N*pick([0.7,0.8,0.85,0.9]));
+  const ans = a + b - N;
+  if (ans <= 0 || a > N || b > N) return null;
+  const [x,y] = shuffle(["tea","coffee"]);
+  return mk("Logical deduction", 100,
+    `In a group of ${N} people, ${a} drink ${x} and ${b} drink ${y}. Everyone drinks at least one. What is the smallest possible number who drink both?`,
+    ans, [N-a, N-b, Math.min(a,b), ans+ri(5,20)],
+    `${a} + ${b} = ${a+b} preferences spread over ${N} people, so at least ${a+b} \u2212 ${N} = ${ans} people must have been counted twice.`);
+},
+function liars(){
+  const [X,Y] = shuffle(["X","Y","P","Q","M","N"]).slice(0,2);
+  if (ri(0,1) === 0){
+    return mk("Logical deduction", 120,
+      `You meet two people, ${X} and ${Y}. Each one either always tells the truth or always lies. ${X} says: \u201CAt least one of us is a liar.\u201D What must be true?`,
+      `${X} tells the truth and ${Y} lies`,
+      [`Both are liars`, `${X} lies and ${Y} tells the truth`, `Both tell the truth`, `It cannot be determined`],
+      `If ${X} were a liar, the statement would be true, and liars cannot say true things. So ${X} is truthful, the statement holds, and the liar must be ${Y}.`);
+  }
+  return mk("Logical deduction", 120,
+    `You meet two people, ${X} and ${Y}. Each one either always tells the truth or always lies. ${X} says: \u201CWe are both liars.\u201D What must be true?`,
+    `${X} lies and ${Y} tells the truth`,
+    [`Both are liars`, `${X} tells the truth and ${Y} lies`, `Both tell the truth`, `It cannot be determined`],
+    `A truth-teller could never call himself a liar, so ${X} lies. His statement is therefore false, meaning they are not both liars, so ${Y} tells the truth.`);
+},
+function wason(){
+  const vowelRule = RND() < 0.5;
+  const vowel = pick(["A","E","I","O","U"]), cons = pick(["K","M","T","B","R"]);
+  const even = pick([2,4,6,8]), odd = pick([3,5,7,9]);
+  const cards = shuffle([vowel, cons, String(even), String(odd)]);
+  const rule = vowelRule
+    ? `if a card has a vowel on one side, it has an even number on the other`
+    : `if a card has a consonant on one side, it has an odd number on the other`;
+  const need = vowelRule ? [vowel, odd] : [cons, even];
+  const other = vowelRule ? [cons, even] : [vowel, odd];
+  return mk("Logical deduction", 130,
+    `Four cards lie on a table showing <span class="seq">${cards.join(", ")}</span>. Every card has a letter on one side and a number on the other. The rule: <em>${rule}</em>. Which cards must you turn over to test it?`,
+    `${need[0]} and ${need[1]}`,
+    [`${need[0]} and ${other[1]}`, `${need[0]}, ${other[0]} and ${other[1]}`, `${other[1]} and ${need[1]}`, `${other[0]} and ${need[1]}`],
+    `Turn ${need[0]} to check the rule holds for it. Turn ${need[1]} because a rule-breaking letter could be hiding behind it. Turning ${other[1]} proves nothing, since the rule never says what must be on the back of ${other[1]}.`);
+},
+function syllogism(){
+  const [A,B,C] = shuffle(NONSENSE).slice(0,3);
+  const adj = pick(["quick","green","noisy","hollow","brittle"]);
+  return mk("Logical deduction", 100,
+    `All ${A} are ${B}. All ${B} are ${C}. Some ${C} are ${adj}. Which statement must be true?`,
+    `All ${A} are ${C}`,
+    [`Some ${A} are ${adj}`, `All ${C} are ${A}`, `No ${B} are ${adj}`, `Some ${B} are not ${C}`],
+    `${A} \u2192 ${B} \u2192 ${C} holds by transitivity. Nothing links \u201C${adj}\u201D back down to ${A}, so that cannot be concluded.`);
+},
+function queue(){
+  const f = ri(5,12), b = ri(6,15), leave = ri(1,4), join = ri(1,5);
+  const total = f + b - 1, ans = total - leave + join;
+  const who = pick(["Zia","Amir","Sara","Bilal","Hina","Omar"]);
+  return mk("Logical deduction", 100,
+    `${who} is ${f}th from the front of a queue and ${b}th from the back. ${leave} people ahead leave, and ${join} new people join at the back. How many are in the queue now?`,
+    ans, [total, total+join, ans+1, ans-1, f+b],
+    `The queue starts at ${f} + ${b} \u2212 1 = ${total}, since ${who} is counted from both ends. Then ${total} \u2212 ${leave} + ${join} = ${ans}.`);
+},
+function falsify(){
+  const sets = [
+    ["missed the deadline","was on the night shift","met the deadline","was on the day shift"],
+    ["returned an order","paid by card","kept the order","paid in cash"],
+    ["failed inspection","came off line B","passed inspection","came off line A"],
+    ["cancelled the plan","joined this year","kept the plan","joined earlier"]
+  ];
+  const s = pick(sets), bad = s[0], cond = s[1], good = s[2], notCond = s[3];
+  return mk("Logical deduction", 110,
+    `Someone claims: \u201CEvery person who ${bad} ${cond}.\u201D Which single piece of evidence would disprove it?`,
+    `Someone who ${bad} and ${notCond}`,
+    [`Someone who ${good} and ${cond}`, `Someone who ${good} and ${notCond}`, `Someone who ${bad} and ${cond}`, `No single case can disprove it`],
+    `The claim forbids exactly one combination: ${bad} while it is not true that they ${cond}. Every other case sits comfortably with the claim, so only that one breaks it.`);
+},
+function ordering(){
+  const names = shuffle(["Amir","Bilal","Chand","Dawood","Erum"]).slice(0,4);
+  const p1=names[0], p2=names[1], p3=names[2], p4=names[3];
+  const askIdx = ri(1,2), ans = names[askIdx];
+  const ord = ["tallest","second tallest","third tallest","shortest"][askIdx];
+  const clues = shuffle([
+    `${p1} is taller than ${p2}`,
+    `${p3} is shorter than ${p2}`,
+    `${p4} is shorter than ${p3}`
+  ]);
+  return mk("Logical deduction", 110,
+    `${clues.join(". ")}. Who is the ${ord}?`,
+    ans, names.filter(n=>n!==ans),
+    `The clues chain into ${p1} > ${p2} > ${p3} > ${p4}, so the ${ord} is ${ans}.`);
+}];
 
- {s:"Logical deduction", t:100, q:"In a group of 100 people, 70 drink tea and 80 drink coffee. Everyone drinks at least one. What is the smallest possible number who drink both?",
-  o:["30","50","70","It cannot be determined"], a:1,
-  w:"70 + 80 = 150 preferences spread over 100 people, so at least 50 people must have been counted twice."},
+/* ============ PROBABILITY & QUANTITATIVE ============ */
+function gcd(a,b){ return b ? gcd(b,a%b) : a; }
+function frac(n,d){ const g = gcd(n,d); return `${n/g}/${d/g}`; }
+const QUANT = [
+function sameColour(){
+  const r = ri(2,6), b = ri(3,7);
+  const n = r+b, tot = n*(n-1)/2, same = r*(r-1)/2 + b*(b-1)/2;
+  const c = shuffle(["red","blue","green","black"]);
+  return mk("Probability & quantitative", 110,
+    `A bag holds ${r} ${c[0]} and ${b} ${c[1]} marbles. Two are drawn without replacement. What is the probability that both are the same colour?`,
+    frac(same,tot),
+    [frac(tot-same,tot), frac(r*(r-1)/2,tot), frac(b*(b-1)/2,tot), frac(same,tot+ri(1,4))],
+    `Same colour = (${r}C2 + ${b}C2) \u00F7 ${n}C2 = (${r*(r-1)/2} + ${b*(b-1)/2}) \u00F7 ${tot} = ${frac(same,tot)}.`);
+},
+function paintedCube(){
+  const n = ri(3,6), kind = ri(0,3);
+  const vals = [12*(n-2), 6*(n-2)*(n-2), 8, (n-2)*(n-2)*(n-2)];
+  const labels = ["exactly two painted faces","exactly one painted face","exactly three painted faces","no painted faces at all"];
+  const reason = ["edge cubes excluding the corners: 12 edges \u00D7 (n \u2212 2)",
+                  "face-centre cubes: 6 faces \u00D7 (n \u2212 2)\u00B2",
+                  "the 8 corner cubes, whatever the size of the cube",
+                  "the fully hidden inner block: (n \u2212 2)\u00B3"][kind];
+  const ans = vals[kind];
+  const wrong = vals.filter((_,i)=>i!==kind).concat([ans+ri(2,8), Math.max(1,ans-ri(2,8))]);
+  return mk("Probability & quantitative", 120,
+    `A ${n}\u00D7${n}\u00D7${n} cube is painted on all six outer faces, then cut into ${n*n*n} unit cubes. How many unit cubes have ${labels[kind]}?`,
+    ans, wrong,
+    `${labels[kind].charAt(0).toUpperCase()+labels[kind].slice(1)} means ${reason}. With n = ${n} that gives ${ans}.`);
+},
+function clockAngle(){
+  const h = ri(1,12), m = pick([5,10,15,20,25,35,40,45,50,55]);
+  let ang = Math.abs(30*(h%12) - 5.5*m);
+  if (ang > 180) ang = 360 - ang;
+  if (ang % 1 !== 0) return null;
+  return mk("Probability & quantitative", 110,
+    `What is the angle between the hour and minute hands at exactly ${h}:${String(m).padStart(2,"0")}?`,
+    `${ang} degrees`,
+    [`${ang+5} degrees`, `${Math.max(0,ang-5)} degrees`, `${ang+10} degrees`, `${Math.max(0,ang-10)} degrees`, `${(ang+30)%360} degrees`],
+    `Hour hand: (${h%12} \u00D7 30) + (${m} \u00D7 0.5) = ${30*(h%12)+0.5*m} degrees from twelve. Minute hand: ${m} \u00D7 6 = ${6*m} degrees. The gap between them is ${ang} degrees.`);
+},
+function diceSum(){
+  const target = ri(4,10);
+  let c = 0; for(let i=1;i<=6;i++) for(let j=1;j<=6;j++) if (i+j===target) c++;
+  return mk("Probability & quantitative", 100,
+    `Two fair six-sided dice are rolled. What is the probability that the total is exactly ${target}?`,
+    frac(c,36),
+    [frac(c+1,36), frac(Math.max(1,c-1),36), frac(c,30), frac(6,36)],
+    `There are ${c} ways to make ${target} out of 36 equally likely outcomes, which is ${frac(c,36)}.`);
+},
+function workRate(){
+  const p1 = ri(2,5), h1 = ri(3,8), w1 = ri(2,6);
+  const p2 = ri(2,8), w2 = ri(3,12);
+  const h2 = (w2 * p1 * h1) / (w1 * p2);
+  if (h2 % 1 !== 0 || h2 < 1 || h2 > 60 || (p2===p1 && w2===w1)) return null;
+  return mk("Probability & quantitative", 110,
+    `If ${p1} painters take ${h1} hours to paint ${w1} walls, how long will ${p2} painters take to paint ${w2} walls?`,
+    `${h2} hours`,
+    [`${h2+ri(1,4)} hours`, `${Math.max(1,h2-ri(1,4))} hours`, `${h1} hours`, `${h2*2} hours`],
+    `Total effort scales with painters \u00D7 hours. ${p1} \u00D7 ${h1} painter-hours give ${w1} walls, so ${w2} walls need ${w2*p1*h1/w1} painter-hours. Split across ${p2} painters that is ${h2} hours.`);
+},
+function pctChain(){
+  const a = pick([10,20,25,30,40,50]), b = pick([10,20,25,30,40,50]);
+  const net = Math.round(((1+a/100)*(1-b/100) - 1)*1000)/10;
+  if (net === 0) return null;
+  const f = v => (v>0?"+":"") + (Math.round(v*10)/10) + "%";
+  return mk("Probability & quantitative", 100,
+    `A price rises by ${a}%, then falls by ${b}%. What is the net change from the starting price?`,
+    f(net), [f(a-b), f(0), f(-net), f(net+5), f(net-5)],
+    `Multiply, do not add: ${(1+a/100).toFixed(2)} \u00D7 ${(1-b/100).toFixed(2)} = ${((1+a/100)*(1-b/100)).toFixed(4)}, a net change of ${f(net)}.`);
+}];
 
- {s:"Logical deduction", t:120, q:"You meet two people, X and Y. Each one either always tells the truth or always lies. X says: At least one of us is a liar. What must be true?",
-  o:["Both are liars","X tells the truth and Y lies","X lies and Y tells the truth","Both tell the truth"], a:1,
-  w:"If X were a liar, his statement would be true, and liars cannot say true things. So X is truthful, his statement holds, and the liar must be Y."},
-
- {s:"Logical deduction", t:130, q:'Four cards lie on a table showing <span class="seq">A, K, 4, 7</span>. Every card has a letter on one side and a number on the other. The rule: if a card has a vowel on one side, it has an even number on the other. Which cards must you turn over to test it?',
-  o:["A and 4","A and 7","A, K and 4","4 and 7"], a:1,
-  w:"Turn A, because a vowel must have an even number. Turn 7, because if a vowel is hiding behind an odd number the rule breaks. Turning 4 proves nothing, since the rule never says an even number must have a vowel."},
-
- {s:"Logical deduction", t:100, q:"All Bloops are Razzies. All Razzies are Lazzies. Some Lazzies are quick. Which statement must be true?",
-  o:["Some Bloops are quick","All Lazzies are Bloops","All Bloops are Lazzies","No Razzies are quick"], a:2,
-  w:"Bloops to Razzies to Lazzies holds by transitivity. Nothing connects quick back down to Bloops."},
-
- {s:"Logical deduction", t:100, q:"Zia is 7th from the front of a queue and 13th from the back. Two people ahead of him leave, and three new people join at the back. How many are in the queue now?",
-  o:["18","19","20","21"], a:2,
-  w:"The original queue is 7 + 13 - 1 = 19, since Zia is counted twice. Take away 2 and add 3 to get 20."},
-
- {s:"Logical deduction", t:110, q:"Someone claims: Every employee who missed the deadline was on the night shift. Which single piece of evidence would disprove it?",
-  o:["A night-shift employee who met the deadline","A day-shift employee who met the deadline","A day-shift employee who missed the deadline","A night-shift employee who missed the deadline"], a:2,
-  w:"The claim rules out exactly one combination: missed the deadline and not on nights. Only C is that case. The others are all consistent with the claim."},
-
- {s:"Probability & quantitative", t:110, q:"A bag holds 3 red and 5 blue marbles. Two are drawn without replacement. What is the probability that both are the same colour?",
-  o:["3/14","13/28","1/2","15/28"], a:1,
-  w:"Same colour = (3C2 + 5C2) divided by 8C2 = (3 + 10) / 28 = 13/28."},
-
- {s:"Probability & quantitative", t:90, q:"On a game show you pick one of three doors. A car is behind one, goats behind the other two. The host, who knows where the car is, opens a different door to reveal a goat, then offers you the swap. What should you do?",
-  o:["Stay, it is now 50/50","Switch, it lifts your chance to 2/3","It makes no difference","Stay, switching drops you to 1/3"], a:1,
-  w:"Your first pick is right 1 time in 3. The other 2 in 3 sat behind the two doors you did not pick, and the host's reveal concentrates all of it onto the one door still closed."},
-
- {s:"Probability & quantitative", t:120, q:"A 4x4x4 cube is painted on all six outer faces, then cut into 64 unit cubes. How many unit cubes have exactly two painted faces?",
-  o:["8","16","24","32"], a:2,
-  w:"Exactly two painted faces means edge cubes, excluding the corners: 12 edges times (4 - 2) = 24."},
-
- {s:"Probability & quantitative", t:110, q:"What is the angle between the hour and minute hands at exactly 3:40?",
-  o:["120 degrees","125 degrees","130 degrees","140 degrees"], a:2,
-  w:"Hour hand: (3 x 30) + (40 x 0.5) = 110 degrees. Minute hand: 40 x 6 = 240 degrees. The difference is 130 degrees."},
-
- {s:"Lateral & verbal", t:130, q:"Two ropes each burn for exactly 60 minutes, but unevenly along their length. With only these ropes and a lighter, how do you measure exactly 45 minutes?",
-  o:["Cut one rope in half and burn both halves",
-     "Light rope 1 at both ends and rope 2 at one end; when rope 1 finishes, light rope 2's other end",
-     "Light both ropes at one end at the same time",
-     "It cannot be done with two ropes"], a:1,
-  w:"Rope 1 lit at both ends is gone in 30 minutes. At that moment rope 2 has 30 minutes of burn left; lighting its second end halves that to 15. 30 + 15 = 45."},
-
- {s:"Lateral & verbal", t:80, q:'Which is the odd one out? &nbsp;<span class="seq">8, 27, 64, 100, 125, 216</span>',
-  o:["8","64","100","216"], a:2,
-  w:"All are perfect cubes (2, 3, 4, 5 and 6 cubed) except 100, which is a perfect square. Note 64 is both, so it is not the odd one."},
-
- {s:"Lateral & verbal", t:80, q:"EPHEMERAL is to PERMANENCE as OPAQUE is to:",
-  o:["Density","Transparency","Darkness","Thickness"], a:1,
-  w:"The pairing is a quality and the thing it lacks. Ephemeral lacks permanence; opaque lacks transparency."},
-
- {s:"Lateral & verbal", t:80, q:"A patch of lily pads doubles in size every day. It covers the whole lake on day 48. On which day did it cover half the lake?",
-  o:["Day 24","Day 36","Day 46","Day 47"], a:3,
-  w:"Run the doubling backwards one step: the day before full cover, it was half."},
-
- {s:"Lateral & verbal", t:90, q:"A jacket and a belt cost 132 dollars together. The jacket costs 100 dollars more than the belt. What does the belt cost?",
-  o:["16 dollars","26 dollars","32 dollars","36 dollars"], a:0,
-  w:"Belt = x, jacket = x + 100, so 2x + 100 = 132 and x = 16. The instinctive answer of 32 gives a total of 164, not 132."}
+/* ============ LATERAL & VERBAL ============ */
+const ANALOGIES = [
+  ["EPHEMERAL","PERMANENCE","OPAQUE","Transparency",["Density","Darkness","Thickness"]],
+  ["ARID","MOISTURE","STERILE","Fertility",["Cleanliness","Silence","Purity"]],
+  ["MUTE","SPEECH","BLIND","Sight",["Darkness","Hearing","Ignorance"]],
+  ["VACUUM","MATTER","SILENCE","Sound",["Peace","Emptiness","Stillness"]],
+  ["NOVICE","EXPERTISE","PAUPER","Wealth",["Poverty","Charity","Humility"]],
+  ["ANARCHY","ORDER","APATHY","Concern",["Chaos","Laziness","Calm"]],
+  ["TRANSPARENT","CONCEAL","POROUS","Retain",["Absorb","Leak","Filter"]],
+  ["DROUGHT","RAIN","FAMINE","Food",["Hunger","Poverty","Disease"]]
 ];
+const LAT = [
+function ropes(){
+  const target = pick([45,75]);
+  const right = {
+    45: "Light rope 1 at both ends and rope 2 at one end; when rope 1 finishes, light rope 2's other end",
+    75: "Burn rope 1 from one end; the moment it finishes, light rope 2 at both ends"
+  };
+  const why = {
+    45: "Rope 1 lit at both ends is gone in 30 minutes. At that moment rope 2 has 30 minutes of burn left, and lighting its second end halves that to 15. 30 + 15 = 45.",
+    75: "Rope 1 burnt end to end takes the full 60 minutes. Rope 2 then lit at both ends takes 30 \u00F7 2 = 15 more. 60 + 15 = 75."
+  };
+  return mk("Lateral & verbal", 130,
+    `Two ropes each burn for exactly 60 minutes, but unevenly along their length, so half a rope is not half an hour. With only these ropes and a lighter, how do you measure exactly ${target} minutes?`,
+    right[target],
+    ["Cut one rope in half and burn both halves",
+     "Light both ropes at one end at the same time",
+     "Light both ropes at both ends at the same time",
+     "It cannot be done with only two ropes"],
+    why[target]);
+},
+function oddOneOut(){
+  const kind = ri(0,2);
+  if (kind === 0){
+    const cubes = shuffle([8,27,64,125,216,343]).slice(0,4);
+    const sq = pick([100,144,196,225]);
+    const set = shuffle(cubes.concat([sq]));
+    return mk("Lateral & verbal", 80,
+      `Which is the odd one out? &nbsp;<span class="seq">${set.join(", ")}</span>`,
+      sq, cubes,
+      `Every other number is a perfect cube. ${sq} is a perfect square but not a cube.`);
+  }
+  if (kind === 1){
+    const primes = shuffle([11,13,17,19,23,29,31,37]).slice(0,4);
+    const comp = pick([21,27,33,39,49,51]);
+    const set = shuffle(primes.concat([comp]));
+    return mk("Lateral & verbal", 80,
+      `Which is the odd one out? &nbsp;<span class="seq">${set.join(", ")}</span>`,
+      comp, primes,
+      `Every other number is prime. ${comp} is composite.`);
+  }
+  const pows = shuffle([16,32,64,128,256]).slice(0,4);
+  const odd = pick([48,96,144,192]);
+  const set = shuffle(pows.concat([odd]));
+  return mk("Lateral & verbal", 80,
+    `Which is the odd one out? &nbsp;<span class="seq">${set.join(", ")}</span>`,
+    odd, pows,
+    `Every other number is a power of 2. ${odd} is not.`);
+},
+function analogy(){
+  const A = pick(ANALOGIES);
+  return mk("Lateral & verbal", 80,
+    `${A[0]} is to ${A[1]} as ${A[2]} is to:`,
+    A[3], A[4],
+    `The pairing is a quality and the thing it lacks: ${A[0].toLowerCase()} lacks ${A[1].toLowerCase()}, and ${A[2].toLowerCase()} lacks ${A[3].toLowerCase()}.`);
+},
+function doubling(){
+  const day = ri(20,60), back = ri(1,3);
+  const part = ["half","a quarter","an eighth"][back-1];
+  const ans = day - back;
+  return mk("Lateral & verbal", 80,
+    `A patch of lily pads doubles in size every day. It covers the whole lake on day ${day}. On which day did it cover ${part} of the lake?`,
+    `Day ${ans}`,
+    [`Day ${Math.round(day/2)}`, `Day ${day-back-1}`, `Day ${day-back+1}`, `Day ${Math.round(day/(back+1))}`],
+    `Run the doubling backwards ${back} step${back>1?"s":""}: the patch halves each day you go back, so ${part} of the lake was covered on day ${ans}.`);
+},
+function costTrap(){
+  const diff = pick([100,200,500,1000]);
+  const small = ri(3,40), total = 2*small + diff;
+  const pair = pick([["jacket","belt"],["laptop","case"],["camera","strap"],["bike","helmet"]]);
+  return mk("Lateral & verbal", 90,
+    `A ${pair[0]} and a ${pair[1]} cost ${total} dollars together. The ${pair[0]} costs ${diff} dollars more than the ${pair[1]}. What does the ${pair[1]} cost?`,
+    `${small} dollars`,
+    [`${total-diff} dollars`, `${Math.round(total/2)} dollars`, `${small+diff} dollars`, `${small*2} dollars`],
+    `Let the ${pair[1]} be x. Then x + (x + ${diff}) = ${total}, so 2x = ${total-diff} and x = ${small}. The instinctive answer of ${total-diff} would make the pair cost ${(total-diff)*2+diff}, not ${total}.`);
+},
+function socks(){
+  const colours = ri(3,6), need = ri(2,3);
+  const ans = colours*(need-1) + 1;
+  const names = shuffle(["black","white","grey","navy","brown","green"]).slice(0,colours);
+  return mk("Lateral & verbal", 90,
+    `A drawer holds plenty of socks in ${colours} colours (${names.join(", ")}), all jumbled together. In complete darkness, how many socks must you take out to be certain of ${need===2?"a matching pair":"three socks of the same colour"}?`,
+    ans, [colours, colours+need, ans+1, ans-1, colours*need],
+    `In the worst case you draw ${need-1} of every colour first, which is ${colours*(need-1)} socks, and the very next one must complete the set. ${colours*(need-1)} + 1 = ${ans}.`);
+},
+function handshakes(){
+  const n = ri(6,15), ans = n*(n-1)/2;
+  return mk("Lateral & verbal", 90,
+    `${n} people attend a meeting and every person shakes hands with every other person exactly once. How many handshakes take place?`,
+    ans, [n*n, n*(n-1), ans+n, ans-n, n*2],
+    `Each of the ${n} people shakes ${n-1} hands, but that counts every handshake twice. ${n} \u00D7 ${n-1} \u00F7 2 = ${ans}.`);
+}];
+
+/* ============ PAPER ASSEMBLY ============ */
+const PLAN = [["Numerical & pattern",NUM,5],["Logical deduction",LOG,6],["Probability & quantitative",QUANT,4],["Lateral & verbal",LAT,5]];
+function buildPaper(){
+  const out = [];
+  for (const row of PLAN){
+    const gens = row[1], count = row[2], chosen = [];
+    let guard = 0;
+    while (chosen.length < count && guard++ < 500){
+      const gi = Math.floor(RND()*gens.length);
+      if (chosen.filter(c => c._g === gi).length >= 2) continue;
+      const q = gens[gi]();
+      if (!q) continue;
+      q._g = gi;
+      chosen.push(q);
+    }
+    if (chosen.length < count) return null;
+    out.push.apply(out, chosen);
+  }
+  return out;
+}
 
 const BANDS = [
   [17,"Exceptional - strong abstract reasoning under pressure","var(--verd)"],
   [13,"Strong - well above average problem solving","var(--verd)"],
   [9, "Average for a professional cohort","var(--brass)"],
   [5, "Below the bar for analytical roles","var(--signal)"],
-  [0, "Weak - reconsider fit for independent reasoning work","var(--signal)"]
+  [-99,"Weak - reconsider fit for independent reasoning work","var(--signal)"]
 ];
 
+/* ============ STATE ============ */
 const $ = id => document.getElementById(id);
-let idx = 0, picked = null, answers = [], spent = [], left = 0, tick = null, name = "";
+let Q = [], idx = 0, picked = null, answers = [], spent = [];
+let left = 0, tick = null, deadline = 0, running = false;
+let name = "", email = "", token = "", switches = 0, awayLock = false;
+
+/* ============ TAB-SWITCH WATCH ============ */
+function flagAway(){
+  if (!running || awayLock) return;
+  awayLock = true; setTimeout(()=>{ awayLock = false; }, 1500);
+  switches++;
+  const al = $("alarm");
+  al.classList.remove("hide");
+  al.textContent = `You left the test ${switches} time${switches>1?"s":""}. Penalty so far: \u2212${switches*SWITCH_PENALTY} point${switches*SWITCH_PENALTY>1?"s":""}.`;
+}
+document.addEventListener("visibilitychange", ()=>{ if (document.hidden) flagAway(); });
+window.addEventListener("blur", flagAway);
+
+/* ============ VERIFICATION ============ */
+function jsonp(params){
+  return new Promise((resolve, reject)=>{
+    const cb = "cb" + Math.random().toString(36).slice(2,9);
+    const s = document.createElement("script");
+    let done = false;
+    window[cb] = d => { done = true; try{delete window[cb];}catch(e){} s.remove(); resolve(d); };
+    s.onerror = () => { if(done) return; try{delete window[cb];}catch(e){} s.remove(); reject(new Error("network")); };
+    const qs = Object.keys(params).map(k => encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join("&");
+    s.src = VERIFY_ENDPOINT + "?callback=" + cb + "&" + qs;
+    document.body.appendChild(s);
+    setTimeout(()=>{ if(!done){ try{delete window[cb];}catch(e){} s.remove(); reject(new Error("timeout")); } }, 20000);
+  });
+}
+
+$("sendCode").onclick = async () => {
+  const v = $("mail").value.trim().toLowerCase();
+  const err = $("mailErr");
+  if (!v.endsWith("@" + ALLOWED_DOMAIN)){
+    err.textContent = `Use your @${ALLOWED_DOMAIN} address.`; return;
+  }
+  err.textContent = "Sending...";
+  $("sendCode").disabled = true;
+  try{
+    const r = await jsonp({action:"send", email:v});
+    if (r && r.ok){
+      email = v;
+      $("stepEmail").classList.add("hide");
+      $("stepCode").classList.remove("hide");
+      $("code").focus();
+      err.textContent = "";
+    } else {
+      err.textContent = (r && r.error) || "Could not send the code.";
+    }
+  }catch(e){ err.textContent = "Could not reach the verification service. Try again."; }
+  $("sendCode").disabled = false;
+};
+
+$("checkCode").onclick = async () => {
+  const c = $("code").value.trim();
+  const err = $("codeErr");
+  if (!/^\d{6}$/.test(c)){ err.textContent = "Enter the six digits from the email."; return; }
+  err.textContent = "Checking...";
+  $("checkCode").disabled = true;
+  try{
+    const r = await jsonp({action:"verify", email:email, code:c});
+    if (r && r.ok){
+      token = r.token || "";
+      name = r.name || email.split("@")[0];
+      $("gate").classList.add("hide");
+      $("start").classList.remove("hide");
+      $("whoStart").textContent = email;
+      $("nameField").classList.add("hide");
+      $("viewResults").classList.add("hide");
+      $("privacyNote").textContent = "Your result is recorded centrally against this email address.";
+      err.textContent = "";
+    } else {
+      err.textContent = (r && r.error) || "That code did not match.";
+    }
+  }catch(e){ err.textContent = "Could not reach the verification service. Try again."; }
+  $("checkCode").disabled = false;
+};
+
+$("backEmail").onclick = () => {
+  $("stepCode").classList.add("hide");
+  $("stepEmail").classList.remove("hide");
+  $("codeErr").textContent = "";
+};
+$("mail").addEventListener("keydown", e => { if (e.key === "Enter") $("sendCode").click(); });
+$("code").addEventListener("keydown", e => { if (e.key === "Enter") $("checkCode").click(); });
+
+/* ============ FLOW ============ */
+if (VERIFY_ENDPOINT){
+  $("gate").classList.remove("hide");
+} else {
+  $("start").classList.remove("hide");
+}
 
 $("go").onclick = () => {
-  name = $("who").value.trim() || "Unnamed";
-  idx = 0; answers = []; spent = [];
+  if (!VERIFY_ENDPOINT) name = $("who").value.trim() || "Unnamed";
+  RND = mulberry((Date.now() ^ Math.floor(Math.random()*1e9)) | 0);
+  let paper = null, tries = 0;
+  while (!paper && tries++ < 30) paper = buildPaper();
+  if (!paper){ alert("Could not build a paper. Please reload and try again."); return; }
+  Q = paper;
+  idx = 0; answers = []; spent = []; switches = 0;
+  $("alarm").classList.add("hide");
   $("start").classList.add("hide");
   $("done").classList.add("hide");
   $("board").classList.add("hide");
   $("quiz").classList.remove("hide");
-  buildTicks();
+  running = true;
+  $("ticks").innerHTML = Q.map(()=>'<div class="tick"></div>').join("");
   show();
 };
 $("who").addEventListener("keydown", e => { if (e.key === "Enter") $("go").click(); });
 
-function buildTicks(){
-  $("ticks").innerHTML = Q.map((_,i)=>`<div class="tick" data-i="${i}"></div>`).join("");
-}
 function paintTicks(){
-  document.querySelectorAll(".tick").forEach((el,i)=>{
-    el.className = "tick" + (i < idx ? " done" : i === idx ? " now" : "");
-  });
+  const els = document.querySelectorAll(".tick");
+  for (let i=0;i<els.length;i++)
+    els[i].className = "tick" + (i < idx ? " done" : i === idx ? " now" : "");
 }
 
 function show(){
@@ -385,9 +742,10 @@ function show(){
   $("stem").innerHTML = q.q;
   $("opts").innerHTML = q.o.map((o,i)=>
     `<button class="opt" data-i="${i}"><span class="ltr">${"ABCD"[i]}</span><span>${o}</span></button>`).join("");
-  $("opts").querySelectorAll(".opt").forEach(b => b.onclick = () => {
+  const btns = $("opts").querySelectorAll(".opt");
+  btns.forEach(b => b.onclick = () => {
     picked = +b.dataset.i;
-    $("opts").querySelectorAll(".opt").forEach(x => x.classList.remove("sel"));
+    btns.forEach(x => x.classList.remove("sel"));
     b.classList.add("sel");
     $("next").disabled = false;
     $("hint").textContent = idx === Q.length-1 ? "Finishing locks your answers." : "You cannot come back to this one.";
@@ -400,24 +758,22 @@ function show(){
 
 function startClock(sec){
   clearInterval(tick);
-  const total = sec; left = sec;
+  deadline = Date.now() + sec*1000;
   $("gauge").classList.remove("low");
-  render();
-  tick = setInterval(()=>{
-    left--; render();
-    if (left <= 15) $("gauge").classList.add("low");
-    if (left <= 0){ clearInterval(tick); advance(true); }
-  }, 1000);
-  function render(){
-    const m = Math.floor(left/60), s = String(Math.max(left,0)%60).padStart(2,"0");
+  const render = () => {
+    left = Math.max(0, Math.round((deadline - Date.now())/1000));
+    const m = Math.floor(left/60), s = String(left%60).padStart(2,"0");
     $("clock").textContent = `${m}:${s}`;
-    $("fluid").style.height = Math.max(0,(left/total)*100) + "%";
-  }
+    $("fluid").style.height = Math.max(0,(left/sec)*100) + "%";
+    if (left <= 15) $("gauge").classList.add("low");
+  };
+  render();
+  tick = setInterval(()=>{ render(); if (left <= 0){ clearInterval(tick); advance(); } }, 250);
 }
 
-$("next").onclick = () => advance(false);
+$("next").onclick = () => advance();
 
-function advance(timedOut){
+function advance(){
   clearInterval(tick);
   answers.push(picked);
   spent.push(Q[idx].t - Math.max(left,0));
@@ -426,35 +782,45 @@ function advance(timedOut){
 }
 
 function finish(){
+  running = false;
+  clearInterval(tick);
   $("quiz").classList.add("hide");
   $("done").classList.remove("hide");
   window.scrollTo(0,0);
 
-  const score = answers.reduce((n,a,i)=> n + (a === Q[i].a ? 1 : 0), 0);
-  $("pts").textContent = score;
-  $("whoDone").textContent = name;
-  const band = BANDS.find(b => score >= b[0]);
+  const raw = answers.reduce((n,a,i)=> n + (a === Q[i].a ? 1 : 0), 0);
+  const penalty = switches * SWITCH_PENALTY;
+  const finalScore = Math.max(0, raw - penalty);
+
+  $("pts").textContent = finalScore;
+  $("ptsOf").textContent = `/ ${Q.length}`;
+  $("whoDone").textContent = VERIFY_ENDPOINT ? email : name;
+  const band = BANDS.find(b => finalScore >= b[0]);
   $("band").textContent = band[1];
   $("band").style.color = band[2];
+  $("penaltyLine").innerHTML = penalty
+    ? `${raw} correct, minus ${penalty} for leaving the test ${switches} time${switches>1?"s":""}.`
+    : `${raw} correct. No tab switches recorded.`;
 
   const secs = {};
   Q.forEach((q,i)=>{
-    secs[q.s] = secs[q.s] || {n:0,c:0,t:0};
+    if (!secs[q.s]) secs[q.s] = {n:0,c:0,t:0};
     secs[q.s].n++;
     secs[q.s].t += spent[i];
     if (answers[i] === q.a) secs[q.s].c++;
   });
-  $("secTable").innerHTML = Object.entries(secs).map(([k,v])=>
-    `<tr><td>${k}</td><td style="text-align:right">${v.c} / ${v.n}</td>
-     <td style="text-align:right">${fmt(v.t)}</td></tr>`).join("")
-    + `<tr><td><b>Total</b></td><td style="text-align:right"><b>${score} / ${Q.length}</b></td>
-       <td style="text-align:right"><b>${fmt(spent.reduce((a,b)=>a+b,0))}</b></td></tr>`;
+  $("secTable").innerHTML = Object.keys(secs).map(k=>{
+    const v = secs[k];
+    return `<tr><td>${k}</td><td style="text-align:right">${v.c} / ${v.n}</td><td style="text-align:right">${fmt(v.t)}</td></tr>`;
+  }).join("")
+    + `<tr><td><b>Total correct</b></td><td style="text-align:right"><b>${raw} / ${Q.length}</b></td>`
+    + `<td style="text-align:right"><b>${fmt(spent.reduce((a,b)=>a+b,0))}</b></td></tr>`;
 
   $("review").innerHTML = Q.map((q,i)=>{
     const a = answers[i], ok = a === q.a;
-    const given = a === null ? "No answer, ran out of time" : `${"ABCD"[a]}) ${q.o[a]}`;
-    return `<div class="rev ${ok?"ok":"no"}">
-      <span class="tag ${ok?"ok":"no"}">${ok?"Correct":"Missed"} &middot; Q${i+1} &middot; ${fmt(spent[i])}</span>
+    const given = (a === null || a === undefined) ? "No answer, ran out of time" : `${"ABCD"[a]}) ${q.o[a]}`;
+    return `<div class="rev ${ok?"good":"bad"}">
+      <span class="tag ${ok?"good":"bad"}">${ok?"Correct":"Missed"} &middot; Q${i+1} &middot; ${fmt(spent[i])}</span>
       <h4>${q.q}</h4>
       <p>Your answer: ${given}</p>
       ${ok?"":`<p>Correct: ${"ABCD"[q.a]}) ${q.o[q.a]}</p>`}
@@ -462,39 +828,36 @@ function finish(){
     </div>`;
   }).join("");
 
-  save(score);
+  save(raw, penalty, finalScore);
 }
 const fmt = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
 
-$("again").onclick = () => { $("done").classList.add("hide"); $("start").classList.remove("hide"); window.scrollTo(0,0); };
+$("again").onclick = () => {
+  $("done").classList.add("hide");
+  $("start").classList.remove("hide");
+  window.scrollTo(0,0);
+};
 
-/* Paste your Google Apps Script web-app URL below to collect every result
-   in one spreadsheet. Leave it empty and results stay on each person's own
-   device only. Setup steps are in the README. */
-const RESULTS_ENDPOINT = "";
-
+/* ============ RESULTS ============ */
 const hasHost = typeof window.storage !== "undefined";
 
-async function save(score){
+async function save(raw, penalty, finalScore){
   const record = {
-    name, score, total: Q.length,
+    name: name, email: email, raw: raw, penalty: penalty, score: finalScore,
+    total: Q.length, switches: switches,
     time: spent.reduce((a,b)=>a+b,0),
-    when: new Date().toISOString(),
-    answers
+    when: new Date().toISOString()
   };
-  if (RESULTS_ENDPOINT){
-    try{
-      await fetch(RESULTS_ENDPOINT, {
-        method:"POST", mode:"no-cors",
-        headers:{"Content-Type":"text/plain;charset=utf-8"},
-        body: JSON.stringify(record)
-      });
-    }catch(e){}
+  if (VERIFY_ENDPOINT){
+    try{ await jsonp({action:"submit", email:email, token:token,
+      raw:raw, penalty:penalty, score:finalScore, total:Q.length,
+      switches:switches, time:record.time}); }catch(e){}
+    return;
   }
   try{
     if (hasHost){
-      const key = "results:" + Date.now() + "-" + Math.random().toString(36).slice(2,7);
-      await window.storage.set(key, JSON.stringify(record), true);
+      await window.storage.set("results:" + Date.now() + "-" + Math.random().toString(36).slice(2,7),
+        JSON.stringify(record), true);
     } else {
       const all = JSON.parse(localStorage.getItem("apt_results") || "[]");
       all.push(record);
@@ -529,9 +892,11 @@ async function board(){
     }
     rows.sort((a,b)=> b.score - a.score || a.time - b.time);
     body.innerHTML = `<table><thead><tr><th>Name</th><th style="text-align:right">Score</th>
-      <th style="text-align:right">Time</th><th style="text-align:right">Taken</th></tr></thead><tbody>` +
-      rows.map(r=>`<tr><td>${esc(r.name)}</td>
+      <th style="text-align:right">Left tab</th><th style="text-align:right">Time</th>
+      <th style="text-align:right">Taken</th></tr></thead><tbody>` +
+      rows.map(r=>`<tr><td>${esc(r.name||r.email||"Unnamed")}</td>
         <td style="text-align:right">${r.score} / ${r.total}</td>
+        <td style="text-align:right">${r.switches||0}</td>
         <td style="text-align:right">${fmt(r.time)}</td>
         <td style="text-align:right">${new Date(r.when).toLocaleDateString()}</td></tr>`).join("") +
       `</tbody></table>` +
