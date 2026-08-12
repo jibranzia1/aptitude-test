@@ -373,7 +373,7 @@ $("go").onclick = async () => {
     Q = r.qs; session = r.session;
   }catch(e){ note.textContent = "FAILED: " + (e && e.message ? e.message : e); $("go").disabled = false; return; }
 
-  idx = 0; answers = []; spent = []; switches = 0; copyTries = 0;
+  idx = 0; answers = []; spent = []; switches = 0; copyTries = 0; finished = false;
   $("alarm").classList.add("hide");
   $("start").classList.add("hide");
   $("done").classList.add("hide");
@@ -432,7 +432,13 @@ function startClock(sec){
 $("next").onclick = () => advance();
 
 function advance(){
+  /* Guard against a double advance: the Next click and the expiring timer can
+     both fire inside the same tick. Recording twice would shift every later
+     answer by one slot, which shows up as answered questions being reported
+     as timeouts. One record per question, no matter how often this is called. */
+  if (answers.length !== idx) return;
   clearInterval(tick);
+  $("next").disabled = true;
   answers.push(picked);
   spent.push(Q[idx].t - Math.max(left,0));
   idx++;
@@ -443,7 +449,10 @@ const fmt = s => `${Math.floor(s/60)}:${String(Math.round(s)%60).padStart(2,"0")
 const tone = label => (label === "Exceptional" || label === "Strong") ? "var(--olive)"
                     : label === "Average" ? "var(--leather)" : "var(--red)";
 
+let finished = false;
 async function finish(){
+  if (finished) return;
+  finished = true;
   running = false;
   document.body.classList.remove("locked");
   clearInterval(tick);
@@ -454,11 +463,11 @@ async function finish(){
   $("pts").textContent = "\u00B7\u00B7";
   $("penaltyLine").textContent = "Marking your paper...";
 
-  const ansStr = answers.map(a => (a === null || a === undefined) ? "-" : String(a)).join("");
+  const ansStr = answers.slice(0, Q.length).map(a => (a === null || a === undefined) ? "-" : String(a)).join("");
   let r = null;
   try{
     r = await call({action:"submit", email:email, token:token, session:session,
-      ans:ansStr, times:spent.join(","), switches:switches, copies:copyTries,
+      ans:ansStr, times:spent.slice(0, Q.length).join(","), switches:switches, copies:copyTries,
       time:spent.reduce((a,b)=>a+b,0)});
   }catch(e){
     $("penaltyLine").textContent = "COULD NOT SUBMIT: " + (e && e.message ? e.message : e);
