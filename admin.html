@@ -78,6 +78,15 @@
   .tag.good{color:var(--olive)}
   .tag.bad{color:var(--red)}
   .why{color:#6B6259;font-size:14px;font-style:italic;margin:12px 0 0}
+  .warn{display:inline-block;font-family:var(--data);font-size:9.5px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--red);border:1.5px solid var(--red);padding:3px 7px;white-space:nowrap}
+  .signals{border:2px solid var(--red);border-left-width:9px;background:#FBF1EF;padding:16px 18px;margin:22px 0 0}
+  .signals .h{font-family:var(--display);font-size:19px;letter-spacing:.06em;color:var(--red);margin-bottom:6px}
+  .signals ul{list-style:none;padding:0;margin:8px 0 0}
+  .signals li{display:flex;gap:10px;font-size:14px;padding:4px 0;line-height:1.5}
+  .signals li::before{content:"\2192";color:var(--red)}
+  .signals .cool{font-family:var(--data);font-size:11px;color:#6B6259;margin-top:12px;letter-spacing:.03em;line-height:1.6}
+  .clean{color:var(--olive);font-family:var(--data);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
   .hide{display:none}
   @media (max-width:660px){
     .card{padding:18px}
@@ -130,6 +139,7 @@
       </div>
       <p class="label" id="dMeta" style="margin:20px 0 0;line-height:1.9"></p>
       <table style="margin-top:18px"><tbody id="dSections"></tbody></table>
+      <div id="dSignals"></div>
       <div class="foot"><span></span><button class="btn ghost" id="back">Back to ledger</button></div>
     </div>
     <div class="label" style="margin:30px 0 14px">Their paper, question by question</div>
@@ -209,11 +219,13 @@ function render(){
   const avg = rows.reduce((a,r)=>a+Number(r.score),0)/n;
   const top = Math.max.apply(null, rows.map(r=>Number(r.score)));
   const flagged = rows.filter(r=>Number(r.switches)+Number(r.copies||0)>0).length;
+  const worth = rows.filter(r=>r.flags && r.flags.length).length;
   $("stats").innerHTML = `
     <div class="stat"><b>${n}</b><span>Completed</span></div>
     <div class="stat"><b>${avg.toFixed(1)}</b><span>Average score</span></div>
     <div class="stat"><b>${top}</b><span>Highest</span></div>
-    <div class="stat"><b style="color:${flagged?"var(--red)":"inherit"}">${flagged}</b><span>Flagged</span></div>`;
+    <div class="stat"><b style="color:${flagged?"var(--red)":"inherit"}">${flagged}</b><span>Left tab or copied</span></div>
+    <div class="stat"><b style="color:${worth?"var(--red)":"inherit"}">${worth}</b><span>Worth a second look</span></div>`;
 
   const sorted = rows.slice().sort((a,b)=>{
     let x = a[sortKey], y = b[sortKey];
@@ -230,6 +242,7 @@ function render(){
       <th data-k="band">Rating</th>
       <th data-k="switches" style="text-align:right">Left tab</th>
       <th data-k="copies" style="text-align:right" class="hcol">Copy</th>
+      <th>Review</th>
       <th data-k="time" style="text-align:right" class="hcol">Time</th>
       <th data-k="when" style="text-align:right" class="hcol">Taken</th>
     </tr></thead><tbody>` +
@@ -240,6 +253,7 @@ function render(){
         <td><span class="pill" style="color:${tone(r.band)}">${r.band}</span></td>
         <td class="n" style="text-align:right">${Number(r.switches) ? `<span class="flag">${r.switches}</span>` : "0"}</td>
         <td class="n" style="text-align:right">${Number(r.copies) ? `<span class="flag">${r.copies}</span>` : "0"}</td>
+        <td>${(r.flags && r.flags.length) ? `<span class="warn">${r.flags.length} to check</span>` : '<span class="clean">clean</span>'}</td>
         <td class="n" style="text-align:right">${fmt(Number(r.time))}</td>
         <td class="n" style="text-align:right">${new Date(r.when).toLocaleDateString()}</td>
       </tr>`).join("") + `</tbody></table>`;
@@ -290,8 +304,27 @@ async function openDetail(id){
       <td class="n muted" style="text-align:right">${fmt(v.t)}</td></tr>`;
   }).join("");
 
+  const sg = r.signals || {flags:[]};
+  const sigBox = document.getElementById("dSignals");
+  if (sg.flags && sg.flags.length){
+    sigBox.className = "signals";
+    sigBox.innerHTML = `<div class="h">Worth asking about</div>
+      <div class="muted" style="font-size:13.5px">None of this proves anything. Put it to them in the follow-up and listen to the answer.</div>
+      <ul>${sg.flags.map(f=>`<li>${esc(f)}</li>`).join("")}</ul>
+      <div class="cool">Easy tier ${sg.easyPct}% correct &middot; hard tier ${sg.hardPct}% &middot;
+        timing spread ${sg.spread}s &middot; ${sg.timedOut} ran out of time</div>`;
+  } else {
+    sigBox.className = "signals";
+    sigBox.style.borderColor = "var(--olive)";
+    sigBox.style.borderLeftColor = "var(--olive)";
+    sigBox.style.background = "#F2F6F3";
+    sigBox.innerHTML = `<div class="h" style="color:var(--olive)">Nothing unusual</div>
+      <div class="cool">Easy tier ${sg.easyPct}% correct &middot; hard tier ${sg.hardPct}% &middot;
+        timing spread ${sg.spread}s &middot; ${sg.timedOut} ran out of time</div>`;
+  }
+
   $("dReview").innerHTML = r.review.map((q,i)=>`<div class="rev ${q.ok?"good":"bad"}">
-      <span class="tag ${q.ok?"good":"bad"}">${q.given===null?"No answer":q.ok?"Correct":"Missed"} &middot; Q${String(i+1).padStart(2,"0")} &middot; ${q.s} &middot; ${fmt(q.spent)} of ${fmt(q.t)}</span>
+      <span class="tag ${q.ok?"good":"bad"}">${q.given===null?"No answer":q.ok?"Correct":"Missed"} &middot; Q${String(i+1).padStart(2,"0")} &middot; ${q.d || q.s} &middot; ${q.s} &middot; ${fmt(q.spent)} of ${fmt(q.t)}</span>
       <h4>${q.q}</h4>
       ${q.o.map((o,j)=>{
         const isC = j === q.a, isG = j === q.given;
