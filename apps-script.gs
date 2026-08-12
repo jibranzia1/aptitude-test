@@ -536,6 +536,8 @@ const FAMILY_CAP = 2;
 function buildPaper(){
   const picked = { Easy: [], Medium: [], Hard: [] };
   const famUsed = {};
+  /* seconds allowed per question, by difficulty */
+  const CLOCK = { Easy: 30, Medium: 45, Hard: 60 };
   const tiers = [["Hard", HARDGEN, HARDFAM, 6],
                  ["Medium", MEDGEN, MEDFAM, 8],
                  ["Easy", EASYGEN, EASYFAM, 6]];
@@ -551,6 +553,7 @@ function buildPaper(){
       while (!q && attempt++ < 25) q = pool[gi]();
       if (!q) continue;
       q.d = label;
+      q.t = CLOCK[label];
       famUsed[fam] = (famUsed[fam] || 0) + 1;
       picked[label].push(q);
       taken++;
