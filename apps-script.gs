@@ -519,138 +519,6 @@ function evenSteps(){
    its variety, then medium, then easy; the paper is shown easiest first. */
 
 
-/* ============ JUDGEMENT ============
-   Workplace scenarios with a defensible best answer. This is a situational
-   judgement test, not an emotional intelligence instrument: it measures whether
-   someone reaches for the direct, accountable response under pressure rather
-   than avoiding, escalating or blaming. Scored and reported separately from
-   the reasoning sections. */
-
-const NAMES = ["Sana","Omar","Bilal","Hina","Faisal","Noor","Adeel","Maria","Kashif","Zara"];
-
-const JUDGEGEN = [
-
-function lateOrder(){
-  const n = pick(NAMES), days = ri(3,9);
-  return mk("Judgement", 60,
-    `A customer messages, angry, because their order is ${days} days late and nobody has updated them. The delay was a courier failure, not yours. What do you do first?`,
-    "Tell them plainly what happened, where the order is now, and when it will arrive",
-    ["Explain that the courier is at fault and that it is out of your hands",
-     "Apologise at length and offer a refund before checking anything",
-     `Pass it to ${n} in logistics and reply once you hear back`,
-     "Send the standard delay template and wait to see if they reply again"],
-    "The customer wants certainty, not blame or apology. Facts first: what happened, where it is, when it lands. Explaining that it is the courier's fault is true and useless to them, and refunding before you have checked gives away margin you may not need to.");
-},
-
-function creditTaken(){
-  const n = pick(NAMES);
-  return mk("Judgement", 60,
-    `In a meeting, ${n} presents work you did as their own. Your manager is in the room. What do you do?`,
-    `Let the meeting run, then raise it with ${n} directly and privately afterwards`,
-    [`Correct ${n} in front of everyone straight away`,
-     "Say nothing and let it go to keep the peace",
-     "Tell your manager privately afterwards without speaking to " + n,
-     "Mention it in your next performance review"],
-    "Correcting them publicly wins the point and costs the relationship. Saying nothing invites a repeat. Going over their head first turns a misunderstanding into a complaint. Direct and private gives them the chance to fix it and tells you whether it was careless or deliberate.");
-},
-
-function missedDeadline(){
-  const n = pick(NAMES), h = ri(2,6);
-  return mk("Judgement", 60,
-    `You realise you will miss a deadline by about ${h} hours. The person waiting is ${n}, who needs it for a client. What do you do?`,
-    `Tell ${n} now, with the new time and what they can start on meanwhile`,
-    [`Work late and tell ${n} only if you actually miss it`,
-     "Send what you have, unfinished, on time",
-     `Ask ${n} for an extension without saying how late you will be`,
-     "Say nothing and hope the client meeting slips"],
-    "The cost of a late deadline is mostly the surprise. Early warning lets them reschedule or start on part of it. Waiting to see whether you make it protects your pride and removes every option they had.");
-},
-
-function vagueCriticism(){
-  return mk("Judgement", 60,
-    `Your manager says your last piece of work "was not up to standard" and moves on to the next topic. You do not know what they mean. What do you do?`,
-    "Ask them, before you leave, which part fell short and what good would have looked like",
-    ["Assume the worst and redo the whole thing",
-     "Wait for the written feedback that may come later",
-     "Ask a colleague whether they know what the manager meant",
-     "Take it as a general mood and carry on as before"],
-    "Vague criticism you do not question becomes vague criticism you repeat. Asking in the moment costs thirty seconds. Redoing everything wastes days on the parts that were fine, and asking a colleague turns your feedback into gossip.");
-},
-
-function ownMistake(){
-  const n = ri(40,400);
-  return mk("Judgement", 60,
-    `You find an error in your own work that has already gone out to about ${n} customers. Nobody has noticed yet. What do you do?`,
-    "Flag it immediately with what went wrong, who is affected, and your proposed fix",
-    ["Fix it quietly and hope nobody notices",
-     "Wait to see whether any customer actually complains",
-     "Flag it, but only once you have worked out how it was partly someone else's doing",
-     "Mention it casually at the next team meeting"],
-    "Errors get cheaper the earlier they surface and more expensive the longer they sit. Fixing it quietly leaves the business blind to a problem that may repeat, and arriving with the fix rather than only the problem is what separates reporting from panicking.");
-},
-
-function twoUrgent(){
-  const a = pick(NAMES); let b = pick(NAMES);
-  if (a === b) return null;
-  return mk("Judgement", 60,
-    `${a} and ${b} both ask you for something urgent within the same hour. You can only finish one today. What do you do?`,
-    "Tell both what you can realistically do and when, and ask which matters more to the business",
-    ["Do the one from whoever is more senior",
-     "Start both and get neither finished",
-     "Do the quicker one first so you can report something done",
-     "Take on both and stay late without telling either"],
-    "Prioritising by seniority optimises for who is annoyed, not for what matters. Being visibly honest about capacity lets the people who own the outcomes make the call, which is their job rather than yours.");
-},
-
-function strugglingNew(){
-  const n = pick(NAMES), w = ri(2,6);
-  return mk("Judgement", 60,
-    `${n} joined ${w} weeks ago and is clearly struggling, but has not asked anyone for help. What do you do?`,
-    `Offer help on something specific you have noticed, rather than asking whether they are fine`,
-    [`Wait for ${n} to ask, since offering might feel patronising`,
-     "Tell their manager they are not coping",
-     "Send them the documentation and leave them to it",
-     "Take the difficult parts of their work off them"],
-    "Someone who has not asked for help usually will not answer 'are you okay'. A specific offer is easy to accept without admitting anything. Taking the hard parts away protects the week and stops them ever learning the job.");
-},
-
-function refundOutsidePolicy(){
-  const d = ri(35,80);
-  return mk("Judgement", 60,
-    `A long-standing customer asks for a refund ${d} days after delivery. Policy allows 30. They are polite and clearly disappointed. What do you do?`,
-    "Explain the policy plainly, then check what you are actually able to offer and come back with it",
-    ["Refuse, since the policy is the policy",
-     "Approve it quietly to keep them happy",
-     "Tell them you will see what you can do, then hope they forget",
-     "Send them to your manager without a recommendation"],
-    "Both a flat refusal and a quiet exception are ways of avoiding the decision. Naming the rule keeps it meaningful, and then finding what you can genuinely offer keeps a customer who has bought from you for years.");
-},
-
-function disagreeAfterDecision(){
-  return mk("Judgement", 60,
-    `A decision has been made that you argued against. You still think it is wrong, but it is going ahead. What do you do?`,
-    "Commit to making it work, while noting what would tell you early that it is going wrong",
-    ["Carry it out exactly as told and say nothing more",
-     "Keep raising the objection until someone listens",
-     "Do it while making clear to colleagues that you disagreed",
-     "Do the minimum and wait to be proved right"],
-    "Disagreeing then committing is the only version of this that helps. Reopening a settled decision stalls everyone, and letting colleagues know you disagreed while doing it badly guarantees the failure you predicted.");
-},
-
-function overloadedPeer(){
-  const n = pick(NAMES);
-  return mk("Judgement", 60,
-    `${n} is visibly overloaded and snaps at you over something small. What do you do?`,
-    "Let it pass in the moment, then check in later when things are calmer",
-    ["Snap back so it is clear the tone is not acceptable",
-     "Raise it with their manager as a conduct issue",
-     "Avoid them until they are in a better mood",
-     "Tell them immediately that they are being unreasonable"],
-    "Responding to the mood rather than the moment costs you nothing and keeps a working relationship. Escalating a snapped remark from someone under pressure is disproportionate, and avoiding them leaves it unresolved.");
-}
-];
-
-
 /* Every question here can be reasoned out inside its own clock by someone who
    has never seen it before. Anything that depends on already knowing the trick
    has been dropped, however elegant it was:
@@ -684,16 +552,13 @@ const HARDFAM2 = ["prob","clock","rate","pctchain","rate","socks",
 const FAMILY_CAP = 2;
 
 function buildPaper(){
-  const picked = { Easy: [], Medium: [], Hard: [], Judgement: [] };
+  const picked = { Easy: [], Medium: [], Hard: [] };
   const famUsed = {};
   /* seconds allowed per question, by difficulty */
-  const CLOCK = { Easy: 30, Medium: 45, Hard: 60, Judgement: 60 };
-  const JUDGEFAM = ["late","credit","deadline","criticism","mistake",
-                    "priority","newstarter","refund","commit","overload"];
-  const tiers = [["Judgement", JUDGEGEN, JUDGEFAM, 5],
-                 ["Hard", HARDGEN2, HARDFAM2, 4],
-                 ["Medium", MEDGEN2, MEDFAM2, 6],
-                 ["Easy", EASYGEN2, EASYFAM2, 5]];
+  const CLOCK = { Easy: 30, Medium: 45, Hard: 60 };
+  const tiers = [["Hard", HARDGEN2, HARDFAM2, 6],
+                 ["Medium", MEDGEN2, MEDFAM2, 8],
+                 ["Easy", EASYGEN2, EASYFAM2, 6]];
 
   for (const tier of tiers){
     const label = tier[0], pool = tier[1], fams = tier[2], count = tier[3];
@@ -713,7 +578,7 @@ function buildPaper(){
     }
     if (taken < count) return null;
   }
-  return picked.Easy.concat(picked.Medium, picked.Hard, picked.Judgement);
+  return picked.Easy.concat(picked.Medium, picked.Hard);
 }
 
 /* Rebuild the exact paper a candidate sat, from its seed. */
