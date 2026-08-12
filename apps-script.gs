@@ -518,18 +518,29 @@ function evenSteps(){
    30% easy / 40% medium / 30% hard. Hard is allocated first so it keeps
    its variety, then medium, then easy; the paper is shown easiest first. */
 
-const HARDGEN = [NUM[0], NUM[1], LOG[1], LOG[2], LOG[5], LOG[6], QUANT[1], LAT[0]];
-const HARDFAM = ["series","series","liars","wason","falsify","ordering","cube","ropes"];
+/* Tiers are set by how long a question honestly takes, not by how clever it
+   looks. Anything that cannot be reasoned out inside its clock has been moved
+   up a tier or dropped. polySeries (n cubed series) is retired: spotting the
+   pattern and computing the sixth term cannot be done in a minute. */
 
-const MEDGEN  = [NUM[2], NUM[3], NUM[4], NUM[5], LOG[0], LOG[3], LOG[4],
-                 QUANT[0], QUANT[2], QUANT[3], QUANT[4], QUANT[5],
-                 LAT[1], LAT[2], LAT[3], LAT[4], LAT[5], LAT[6]];
-const MEDFAM  = ["series","percent","rate","series","sets","syllogism","queue",
-                 "prob","clock","prob","rate","percent",
-                 "oddoneout","analogy","doubling","costtrap","socks","handshakes"];
+const EASYGEN2 = [EASYGEN[0], EASYGEN[1], EASYGEN[2], EASYGEN[5],
+                  EASYGEN[8], EASYGEN[9], EASYGEN[10], LAT[3]];
+const EASYFAM2 = ["series","percent","percent","speed",
+                  "analogy","prob","series","doubling"];
 
-const EASYFAM = ["series","percent","percent","average","ratio","speed",
-                 "calendar","multiple","analogy","prob","series"];
+const MEDGEN2  = [EASYGEN[3], EASYGEN[4], EASYGEN[6], EASYGEN[7],
+                  NUM[5], NUM[2], NUM[3],
+                  LOG[0], LOG[3], LOG[4], QUANT[3],
+                  LAT[1], LAT[2], LAT[4], LAT[6]];
+const MEDFAM2  = ["average","ratio","calendar","multiple",
+                  "series","series","percent",
+                  "sets","syllogism","queue","prob",
+                  "oddoneout","analogy","costtrap","handshakes"];
+
+const HARDGEN2 = [QUANT[0], QUANT[2], QUANT[4], QUANT[5], NUM[4], LAT[5],
+                  LOG[1], LOG[5], LOG[6], LOG[2], QUANT[1], LAT[0], NUM[1]];
+const HARDFAM2 = ["prob","clock","rate","percent","rate","socks",
+                  "liars","falsify","ordering","wason","cube","ropes","series"];
 
 const FAMILY_CAP = 2;
 
@@ -538,9 +549,9 @@ function buildPaper(){
   const famUsed = {};
   /* seconds allowed per question, by difficulty */
   const CLOCK = { Easy: 30, Medium: 45, Hard: 60 };
-  const tiers = [["Hard", HARDGEN, HARDFAM, 6],
-                 ["Medium", MEDGEN, MEDFAM, 8],
-                 ["Easy", EASYGEN, EASYFAM, 6]];
+  const tiers = [["Hard", HARDGEN2, HARDFAM2, 6],
+                 ["Medium", MEDGEN2, MEDFAM2, 8],
+                 ["Easy", EASYGEN2, EASYFAM2, 6]];
 
   for (const tier of tiers){
     const label = tier[0], pool = tier[1], fams = tier[2], count = tier[3];
