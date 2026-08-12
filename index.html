@@ -415,17 +415,31 @@ let left = 0, tick = null, deadline = 0, running = false;
 let name = "", email = "", token = "", switches = 0, copyTries = 0, awayLock = false, copyLock = false;
 
 /* ---------- transport ---------- */
-function call(params){
+function call(params, attempt){
+  attempt = attempt || 1;
+  const base = (typeof VERIFY_ENDPOINT !== "undefined") ? VERIFY_ENDPOINT : ENDPOINT;
   const qs = Object.keys(params).map(k => encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join("&");
-  return fetch(VERIFY_ENDPOINT + "?callback=cb&_=" + Date.now() + "&" + qs,
-               { method:"GET", redirect:"follow", credentials:"omit", cache:"no-store" })
+  return fetch(base + "?callback=cb&_=" + Date.now() + "_" + attempt + "&" + qs,
+               { method:"GET", redirect:"follow", cache:"no-store" })
     .then(r => r.text())
     .then(t => {
       const s = String(t).trim();
       const m = s.match(/cb\(([\s\S]*)\)\s*;?\s*$/);
       if (m) return JSON.parse(m[1]);
       try { return JSON.parse(s); } catch (e) {}
-      throw new Error("Server sent " + s.length + " chars, not data. Starts: " + s.slice(0,60).replace(/\s+/g," "));
+      throw new Error("bad-response");
+    })
+    .catch(err => {
+      /* Google's Apps Script front end intermittently answers with a 404 page
+         instead of the data. It clears on a retry, so try a few times before
+         troubling the person using this. */
+      if (attempt < 4){
+        return new Promise(r => setTimeout(r, attempt * 700))
+          .then(() => call(params, attempt + 1));
+      }
+      throw new Error(err && err.message === "bad-response"
+        ? "The service answered oddly three times. Wait a moment and try again."
+        : (err && err.message ? err.message : String(err)));
     });
 }
 
