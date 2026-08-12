@@ -1,120 +1,145 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Results Dashboard</title>
+<title>Results Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#10151C; --slate:#1B2430; --steel:#2C3847; --paper:#ECEAE4;
-    --mute:#8A94A3; --brass:#C08A2E; --signal:#C4553B; --verd:#4E8C7D;
-    --mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
-    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --paper:#F5F0EB; --card:#FFFFFF; --ink:#1A1A1A; --red:#C0392B;
+    --steel:#8C8C8C; --leather:#8B4513; --olive:#4A6B4F;
+    --display:"Bebas Neue", "Arial Narrow", Impact, sans-serif;
+    --data:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --body:Georgia, "Iowan Old Style", "Times New Roman", serif;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
-  body{background:var(--ink);color:var(--paper);font-family:var(--sans);line-height:1.5;
-    -webkit-font-smoothing:antialiased;padding:24px 16px 80px}
-  .wrap{max-width:1000px;margin:0 auto}
-  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass)}
-  h1{font-family:var(--mono);font-size:clamp(22px,4vw,30px);margin:6px 0 4px;font-weight:600}
-  .rule{height:1px;background:var(--steel);border:0;margin:20px 0}
-  .muted{color:var(--mute)}
-  .panel{background:var(--slate);border:1px solid var(--steel);border-radius:2px;padding:24px}
-  .btn{background:var(--brass);color:var(--ink);border:0;border-radius:2px;padding:12px 24px;
-    font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
-  .btn:hover{filter:brightness(1.12)}
-  .btn.ghost{background:transparent;color:var(--mute);border:1px solid var(--steel)}
-  .btn.ghost:hover{color:var(--paper);border-color:var(--mute);filter:none}
-  :focus-visible{outline:2px solid var(--brass);outline-offset:3px}
-  label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.16em;
-    text-transform:uppercase;color:var(--mute);margin-bottom:8px}
-  input{width:100%;background:var(--ink);border:1px solid var(--steel);color:var(--paper);
-    padding:13px 14px;font-size:16px;font-family:var(--sans);border-radius:2px}
-  input:focus{border-color:var(--brass);outline:none}
-  .err{color:var(--signal);font-size:13px;margin-top:10px;min-height:18px}
-  .stats{display:flex;gap:26px;flex-wrap:wrap;margin-bottom:6px}
-  .stat b{display:block;font-family:var(--mono);font-size:30px;line-height:1.1}
-  .stat span{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
-  table{width:100%;border-collapse:collapse;font-size:14px}
-  th{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);
-    text-align:left;font-weight:400;padding:9px 8px;border-bottom:1px solid var(--steel);cursor:pointer;user-select:none}
-  th:hover{color:var(--paper)}
-  td{padding:11px 8px;border-bottom:1px solid var(--steel)}
+  body{background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.55;
+    -webkit-font-smoothing:antialiased;padding:0 16px 90px}
+  .wrap{max-width:1040px;margin:0 auto}
+  .mast{border-bottom:3px solid var(--ink);padding:22px 0 12px;margin-bottom:26px;
+    display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+  .mast h1{font-family:var(--display);font-size:clamp(32px,6vw,52px);line-height:.9;margin:0;font-weight:400}
+  .mast .sub{font-family:var(--data);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--steel);margin-top:8px}
+  .serial{font-family:var(--data);font-size:10.5px;letter-spacing:.16em;color:var(--steel);text-align:right;text-transform:uppercase}
+  .card{background:var(--card);border:2px solid var(--ink);padding:26px}
+  .cardhead{background:var(--ink);color:var(--paper);font-family:var(--display);font-size:20px;
+    letter-spacing:.08em;padding:9px 26px;margin:-26px -26px 22px}
+  .label{font-family:var(--data);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--steel)}
+  .muted{color:var(--steel)}
+  .seq{font-family:var(--data);font-weight:700}
+  label{display:block;font-family:var(--data);font-size:10px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--steel);margin-bottom:9px}
+  input{width:100%;background:var(--paper);border:2px solid var(--ink);color:var(--ink);
+    padding:14px;font-size:16px;font-family:var(--body);border-radius:0}
+  input:focus{outline:none;border-color:var(--red)}
+  .err{color:var(--red);font-family:var(--data);font-size:12px;margin-top:12px;min-height:16px}
+  .btn{background:var(--ink);color:var(--paper);border:2px solid var(--ink);border-radius:0;
+    padding:12px 26px;font-family:var(--display);font-size:16px;letter-spacing:.1em;cursor:pointer;
+    transition:background .12s ease,color .12s ease}
+  .btn:hover{background:var(--red);border-color:var(--red)}
+  .btn.ghost{background:transparent;color:var(--ink)}
+  .btn.ghost:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  :focus-visible{outline:3px solid var(--red);outline-offset:2px}
+  .foot{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:14px}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    border:2px solid var(--ink);background:var(--ink);gap:2px;margin-bottom:22px}
+  .stat{background:var(--card);padding:16px 18px}
+  .stat b{display:block;font-family:var(--display);font-size:42px;line-height:.9}
+  .stat span{font-family:var(--data);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--steel)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  th{font-family:var(--data);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--steel);
+    text-align:left;font-weight:400;padding:10px 8px;border-bottom:2px solid var(--ink);cursor:pointer;user-select:none}
+  th:hover{color:var(--red)}
+  td{padding:12px 8px;border-bottom:1px solid #E2DAD1;font-family:var(--body)}
+  td.n{font-family:var(--data);font-size:13.5px}
   tr.row{cursor:pointer}
-  tr.row:hover td{background:#212C3A}
-  .pill{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
-    padding:3px 8px;border-radius:2px;border:1px solid currentColor;white-space:nowrap}
-  .flag{color:var(--signal);font-family:var(--mono);font-size:12px}
-  .rev{border-left:2px solid var(--steel);padding:12px 0 12px 16px;margin-bottom:14px}
-  .rev.good{border-left-color:var(--verd)}
-  .rev.bad{border-left-color:var(--signal)}
-  .rev h4{margin:0 0 8px;font-size:14.5px;font-weight:600;font-family:var(--serif)}
-  .rev .opt{font-family:var(--mono);font-size:12.5px;padding:3px 0;color:var(--mute)}
-  .rev .opt.correct{color:var(--verd)}
-  .rev .opt.chosen{color:var(--signal)}
-  .rev .opt.both{color:var(--verd)}
-  .tag{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
-  .tag.good{color:var(--verd)}
-  .tag.bad{color:var(--signal)}
-  .why{color:var(--mute);font-size:13px;margin:8px 0 0}
-  .seq{font-family:var(--mono);letter-spacing:.04em}
+  tr.row:hover td{background:#F0EAE2}
+  .pill{font-family:var(--data);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+    padding:4px 9px;border:1.5px solid currentColor;white-space:nowrap}
+  .flag{color:var(--red);font-family:var(--data);font-weight:700}
+  .stamp{display:inline-block;border:3px double currentColor;font-family:var(--display);
+    font-size:clamp(22px,4vw,30px);letter-spacing:.1em;padding:7px 18px 4px;transform:rotate(-4deg);
+    box-shadow:inset 0 0 0 1px currentColor;opacity:.9}
+  .bigscore{font-family:var(--display);font-size:86px;line-height:.8}
+  .bigscore small{font-size:24px;color:var(--steel)}
+  .verdict{display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+  .rev{border-left:5px solid var(--steel);background:var(--card);border-top:1px solid #E2DAD1;
+    border-right:1px solid #E2DAD1;border-bottom:1px solid #E2DAD1;padding:16px 18px;margin-bottom:14px}
+  .rev.good{border-left-color:var(--olive)}
+  .rev.bad{border-left-color:var(--red)}
+  .rev h4{margin:8px 0 12px;font-size:16px;font-weight:normal;font-family:var(--body)}
+  .rev .opt{font-family:var(--data);font-size:12.5px;padding:4px 0;color:#6B6259}
+  .rev .opt.correct{color:var(--olive);font-weight:700}
+  .rev .opt.chosen{color:var(--red);font-weight:700}
+  .rev .opt.both{color:var(--olive);font-weight:700}
+  .tag{font-family:var(--data);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase}
+  .tag.good{color:var(--olive)}
+  .tag.bad{color:var(--red)}
+  .why{color:#6B6259;font-size:14px;font-style:italic;margin:12px 0 0}
   .hide{display:none}
-  @media (max-width:640px){
-    .panel{padding:16px}
-    td,th{padding:8px 5px;font-size:13px}
+  @media (max-width:660px){
+    .card{padding:18px}
+    .cardhead{margin:-18px -18px 18px;padding:8px 18px}
+    td,th{padding:9px 5px;font-size:13.5px}
     .hcol{display:none}
+    .bigscore{font-size:64px}
   }
 </style>
 
 <div class="wrap">
 
+  <div class="mast">
+    <div>
+      <h1>Results Ledger</h1>
+      <div class="sub" id="sub">Private &middot; admin access only</div>
+    </div>
+    <div class="serial">Form AR-20<br>Assessor copy</div>
+  </div>
+
   <section id="login">
-    <div class="eyebrow">Private</div>
-    <h1>Results Dashboard</h1>
-    <p class="muted" style="margin-top:0">Enter the admin key set in your Apps Script.</p>
-    <hr class="rule">
-    <div class="panel" style="max-width:460px">
+    <div class="card" style="max-width:470px">
+      <div class="cardhead">Sign in</div>
       <label for="key">Admin key</label>
       <input id="key" type="password" placeholder="Admin key" autocomplete="off">
       <div class="err" id="keyErr"></div>
-      <div style="display:flex;justify-content:flex-end;margin-top:8px">
-        <button class="btn" id="open">Open dashboard</button>
-      </div>
+      <div class="foot"><span></span><button class="btn" id="open">Open ledger</button></div>
     </div>
   </section>
 
   <section id="list" class="hide">
-    <div class="eyebrow">Private</div>
-    <h1>Results Dashboard</h1>
-    <hr class="rule">
     <div class="stats" id="stats"></div>
-    <hr class="rule">
-    <div class="panel">
+    <div class="card">
+      <div class="cardhead">Candidates</div>
       <div id="tableBox"></div>
-      <div style="display:flex;justify-content:space-between;margin-top:20px;gap:12px">
+      <div class="foot">
         <button class="btn ghost" id="csv">Download CSV</button>
         <button class="btn ghost" id="refresh">Refresh</button>
       </div>
     </div>
-    <p class="muted" style="font-size:12.5px;margin-top:14px">Click any row to see that candidate's exact paper and every answer they gave.</p>
+    <p class="label" style="margin-top:16px">Click any row for that candidate's paper and every answer</p>
   </section>
 
   <section id="detail" class="hide">
-    <div class="eyebrow" id="dWho"></div>
-    <h1 id="dScore"></h1>
-    <div id="dMeta" class="muted" style="font-size:13.5px"></div>
-    <div style="margin-top:18px"><button class="btn ghost" id="back">Back to all results</button></div>
-    <hr class="rule">
-    <div class="panel" style="margin-bottom:22px"><table><tbody id="dSections"></tbody></table></div>
-    <div class="eyebrow">Their paper, question by question</div>
-    <div id="dReview" style="margin-top:18px"></div>
+    <div class="card">
+      <div class="cardhead" id="dWho"></div>
+      <div class="verdict">
+        <div class="bigscore" id="dScore"></div>
+        <div class="stamp" id="dStamp"></div>
+      </div>
+      <p class="label" id="dMeta" style="margin:20px 0 0;line-height:1.9"></p>
+      <table style="margin-top:18px"><tbody id="dSections"></tbody></table>
+      <div class="foot"><span></span><button class="btn ghost" id="back">Back to ledger</button></div>
+    </div>
+    <div class="label" style="margin:30px 0 14px">Their paper, question by question</div>
+    <div id="dReview"></div>
   </section>
 
 </div>
 
 <script src="engine.js"></script>
 <script>
-/* Paste the same Apps Script web-app URL used by the test. */
 const ENDPOINT = "https://script.google.com/macros/s/AKfycbw3CERsTbFcVYDY3tD6wmhE6hT7t2nJJf02oWQULVjtMpMsV6nTlim33-9HoxTlRhgZ/exec";
 
 const $ = id => document.getElementById(id);
@@ -136,12 +161,12 @@ function jsonp(params){
 
 const fmt = s => `${Math.floor(s/60)}:${String(Math.round(s)%60).padStart(2,"0")}`;
 const esc = s => String(s == null ? "" : s).replace(/[<>&"]/g, c => ({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;"}[c]));
+const tone = b => b[3] === "var(--verd)" ? "var(--olive)" : b[3] === "var(--brass)" ? "var(--leather)" : "var(--red)";
 
 $("open").onclick = async () => {
   adminKey = $("key").value.trim();
-  if (!ENDPOINT){ $("keyErr").textContent = "No endpoint configured. Paste your Apps Script URL into ENDPOINT in admin.html."; return; }
-  if (!adminKey){ $("keyErr").textContent = "Enter the admin key."; return; }
-  $("keyErr").textContent = "Loading...";
+  if (!adminKey){ $("keyErr").textContent = "ENTER THE ADMIN KEY"; return; }
+  $("keyErr").textContent = "LOADING...";
   await load();
 };
 $("key").addEventListener("keydown", e => { if (e.key === "Enter") $("open").click(); });
@@ -150,13 +175,14 @@ $("refresh").onclick = load;
 async function load(){
   try{
     const r = await jsonp({action:"admin", key:adminKey});
-    if (!r || !r.ok){ $("keyErr").textContent = (r && r.error) || "Wrong key."; return; }
+    if (!r || !r.ok){ $("keyErr").textContent = ((r && r.error) || "Wrong key.").toUpperCase(); return; }
     rows = r.rows || [];
     $("login").classList.add("hide");
     $("detail").classList.add("hide");
     $("list").classList.remove("hide");
+    $("sub").textContent = rows.length + " completed";
     render();
-  }catch(e){ $("keyErr").textContent = "Could not reach the service."; }
+  }catch(e){ $("keyErr").textContent = "COULD NOT REACH THE SERVICE"; }
 }
 
 function render(){
@@ -173,7 +199,7 @@ function render(){
     <div class="stat"><b>${n}</b><span>Completed</span></div>
     <div class="stat"><b>${avg.toFixed(1)}</b><span>Average score</span></div>
     <div class="stat"><b>${top}</b><span>Highest</span></div>
-    <div class="stat"><b style="color:${flagged?"var(--signal)":"var(--paper)"}">${flagged}</b><span>Left the tab</span></div>`;
+    <div class="stat"><b style="color:${flagged?"var(--red)":"inherit"}">${flagged}</b><span>Left the tab</span></div>`;
 
   const sorted = rows.slice().sort((a,b)=>{
     let x = a[sortKey], y = b[sortKey];
@@ -196,12 +222,12 @@ function render(){
       const band = bandFor(Number(r.score));
       return `<tr class="row" data-id="${esc(r.id)}">
         <td>${esc(r.email || r.name || "Unnamed")}</td>
-        <td style="text-align:right"><b>${r.score}</b> <span class="muted">/ ${r.total}</span></td>
-        <td style="text-align:right" class="hcol">${r.raw}</td>
-        <td><span class="pill" style="color:${band[3]}">${band[1]}</span></td>
-        <td style="text-align:right">${Number(r.switches) ? `<span class="flag">${r.switches}</span>` : "0"}</td>
-        <td style="text-align:right" class="hcol">${fmt(Number(r.time))}</td>
-        <td style="text-align:right" class="hcol">${new Date(r.when).toLocaleDateString()}</td>
+        <td class="n" style="text-align:right"><b>${r.score}</b><span class="muted">/${r.total}</span></td>
+        <td class="n" style="text-align:right">${r.raw}</td>
+        <td><span class="pill" style="color:${tone(band)}">${band[1]}</span></td>
+        <td class="n" style="text-align:right">${Number(r.switches) ? `<span class="flag">${r.switches}</span>` : "0"}</td>
+        <td class="n" style="text-align:right">${fmt(Number(r.time))}</td>
+        <td class="n" style="text-align:right">${new Date(r.when).toLocaleDateString()}</td>
       </tr>`;
     }).join("") + `</tbody></table>`;
 
@@ -227,12 +253,14 @@ function openDetail(id){
   window.scrollTo(0,0);
 
   $("dWho").textContent = r.email || r.name || "Unnamed";
-  $("dScore").innerHTML = `${r.score} / ${r.total} <span style="color:${band[3]};font-size:16px">${band[1]}</span>`;
+  $("dScore").innerHTML = `${r.score}<small>/${r.total}</small>`;
+  $("dStamp").innerHTML = band[1].toUpperCase();
+  $("dStamp").style.color = tone(band);
   $("dMeta").innerHTML =
     `${r.raw} correct` +
-    (Number(r.penalty) ? `, minus ${r.penalty} for leaving the tab ${r.switches} time${Number(r.switches)>1?"s":""}` : `, no tab switches`) +
+    (Number(r.penalty) ? ` &middot; <span style="color:var(--red)">minus ${r.penalty} for leaving the tab ${r.switches} time${Number(r.switches)>1?"s":""}</span>` : ` &middot; no tab switches`) +
     ` &middot; ${fmt(Number(r.time))} total &middot; ${new Date(r.when).toLocaleString()}` +
-    ` &middot; <span class="seq">paper ${r.seed}</span>`;
+    ` &middot; paper <span class="seq">${r.seed}</span>`;
 
   const secs = {};
   paper.forEach((q,i)=>{
@@ -242,25 +270,24 @@ function openDetail(id){
     if (ans[i] !== "-" && Number(ans[i]) === q.a) secs[q.s].c++;
   });
   $("dSections").innerHTML = Object.keys(secs).map(k=>{
-    const v = secs[k];
-    const pctv = Math.round(v.c/v.n*100);
+    const v = secs[k], p = Math.round(v.c/v.n*100);
     return `<tr><td>${k}</td>
-      <td style="text-align:right">${v.c} / ${v.n}</td>
-      <td style="text-align:right;color:${pctv>=70?"var(--verd)":pctv>=50?"var(--brass)":"var(--signal)"}">${pctv}%</td>
-      <td style="text-align:right" class="muted">${fmt(v.t)}</td></tr>`;
+      <td class="n" style="text-align:right">${v.c} / ${v.n}</td>
+      <td class="n" style="text-align:right;color:${p>=70?"var(--olive)":p>=50?"var(--leather)":"var(--red)"}"><b>${p}%</b></td>
+      <td class="n muted" style="text-align:right">${fmt(v.t)}</td></tr>`;
   }).join("");
 
   $("dReview").innerHTML = paper.map((q,i)=>{
     const given = ans[i] === "-" || ans[i] === undefined ? null : Number(ans[i]);
     const ok = given === q.a;
     return `<div class="rev ${ok?"good":"bad"}">
-      <span class="tag ${ok?"good":"bad"}">${given===null?"No answer":ok?"Correct":"Missed"} &middot; Q${i+1} &middot; ${q.s} &middot; ${fmt(times[i]||0)} of ${fmt(q.t)}</span>
+      <span class="tag ${ok?"good":"bad"}">${given===null?"No answer":ok?"Correct":"Missed"} &middot; Q${String(i+1).padStart(2,"0")} &middot; ${q.s} &middot; ${fmt(times[i]||0)} of ${fmt(q.t)}</span>
       <h4>${q.q}</h4>
       ${q.o.map((o,j)=>{
         const isC = j === q.a, isG = j === given;
         const cls = isC && isG ? "both" : isC ? "correct" : isG ? "chosen" : "";
         const mark = isC && isG ? "\u2713 chosen, correct" : isC ? "\u2713 correct answer" : isG ? "\u2717 their answer" : "";
-        return `<div class="opt ${cls}">${"ABCD"[j]}) ${o} ${mark ? "&nbsp;&mdash;&nbsp;" + mark : ""}</div>`;
+        return `<div class="opt ${cls}">${"ABCD"[j]}) ${o}${mark ? "  \u2014  " + mark : ""}</div>`;
       }).join("")}
       <p class="why">${q.w}</p>
     </div>`;
