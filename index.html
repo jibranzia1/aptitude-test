@@ -1,211 +1,251 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aptitude &amp; Reasoning Test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#10151C; --slate:#1B2430; --steel:#2C3847; --paper:#ECEAE4;
-    --mute:#8A94A3; --brass:#C08A2E; --signal:#C4553B; --verd:#4E8C7D;
-    --mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
-    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --paper:#F5F0EB; --card:#FFFFFF; --ink:#1A1A1A; --red:#C0392B;
+    --steel:#8C8C8C; --leather:#8B4513; --olive:#4A6B4F; --line:#1A1A1A;
+    --display:"Bebas Neue", "Arial Narrow", Impact, sans-serif;
+    --data:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --body:Georgia, "Iowan Old Style", "Times New Roman", serif;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
-  body{background:var(--ink);color:var(--paper);font-family:var(--sans);line-height:1.5;
-    -webkit-font-smoothing:antialiased;padding:24px 16px 64px}
-  .wrap{max-width:860px;margin:0 auto}
-  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass)}
-  .rule{height:1px;background:var(--steel);border:0;margin:20px 0}
-  .muted{color:var(--mute)}
-  h1{font-family:var(--mono);font-size:clamp(22px,4.4vw,32px);letter-spacing:-.01em;margin:6px 0 4px;font-weight:600}
-  .panel{background:var(--slate);border:1px solid var(--steel);border-radius:2px;padding:24px}
-  button{font-family:inherit}
-  .btn{background:var(--brass);color:var(--ink);border:0;border-radius:2px;padding:13px 26px;
-    font-family:var(--mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:filter .15s ease}
-  .btn:hover:not(:disabled){filter:brightness(1.12)}
-  .btn:disabled{background:var(--steel);color:var(--mute);cursor:not-allowed}
-  .btn.ghost{background:transparent;color:var(--mute);border:1px solid var(--steel)}
-  .btn.ghost:hover{color:var(--paper);border-color:var(--mute);filter:none}
-  :focus-visible{outline:2px solid var(--brass);outline-offset:3px}
+  body{background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.55;
+    -webkit-font-smoothing:antialiased;padding:0 16px 90px}
+  .wrap{max-width:820px;margin:0 auto}
+
+  /* ---- masthead ---- */
+  .mast{border-bottom:3px solid var(--ink);padding:22px 0 12px;margin-bottom:26px;
+    display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+  .mast h1{font-family:var(--display);font-size:clamp(34px,7vw,58px);line-height:.9;
+    letter-spacing:.02em;margin:0;font-weight:400}
+  .mast .sub{font-family:var(--data);font-size:10.5px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--steel);margin-top:8px}
+  .serial{font-family:var(--data);font-size:10.5px;letter-spacing:.16em;color:var(--steel);
+    text-align:right;text-transform:uppercase;white-space:nowrap}
+
+  /* ---- card ---- */
+  .card{background:var(--card);border:2px solid var(--ink);padding:26px}
+  .card + .card{margin-top:18px}
+  .cardhead{background:var(--ink);color:var(--paper);font-family:var(--display);
+    font-size:20px;letter-spacing:.08em;padding:9px 26px;margin:-26px -26px 22px}
+
+  /* ---- type helpers ---- */
+  .label{font-family:var(--data);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--steel)}
+  .muted{color:var(--steel)}
+  .seq{font-family:var(--data);letter-spacing:.02em;font-weight:700}
+
+  /* ---- rules list ---- */
   .rules{list-style:none;padding:0;margin:0}
-  .rules li{display:flex;gap:14px;padding:11px 0;border-bottom:1px solid var(--steel);font-size:14.5px}
-  .rules li:last-child{border-bottom:0}
-  .rules span{font-family:var(--mono);font-size:11px;color:var(--brass);padding-top:3px;min-width:20px}
-  .field{margin:22px 0 20px}
-  label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.16em;
-    text-transform:uppercase;color:var(--mute);margin-bottom:8px}
-  input[type=text],input[type=email]{width:100%;background:var(--ink);border:1px solid var(--steel);
-    color:var(--paper);padding:13px 14px;font-size:16px;font-family:var(--sans);border-radius:2px}
-  input:focus{border-color:var(--brass);outline:none}
-  input.code{font-family:var(--mono);font-size:24px;letter-spacing:.5em;text-align:center}
-  .err{color:var(--signal);font-size:13px;margin-top:10px;min-height:18px}
-  .ticks{display:flex;gap:3px;margin-bottom:22px}
-  .tick{flex:1;height:3px;background:var(--steel);border-radius:1px}
-  .tick.done{background:var(--mute)}
-  .tick.now{background:var(--brass)}
-  .qgrid{display:grid;grid-template-columns:78px 1fr;gap:26px;align-items:start}
-  .gauge{position:relative}
-  .gauge .clock{font-family:var(--mono);font-size:27px;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1}
-  .gauge .unit{font-family:var(--mono);font-size:10px;color:var(--mute);letter-spacing:.16em;margin-top:5px}
-  .tube{margin-top:14px;height:190px;width:8px;background:var(--ink);border:1px solid var(--steel);
-    border-radius:1px;position:relative;overflow:hidden}
-  .fluid{position:absolute;left:0;right:0;bottom:0;background:var(--brass);transition:height .3s linear, background-color .3s ease}
-  .low .clock{color:var(--signal)}
-  .low .fluid{background:var(--signal)}
-  .low .tube{animation:pulse 1s ease-in-out infinite}
-  @keyframes pulse{50%{border-color:var(--signal)}}
-  .qnum{font-family:var(--mono);font-size:11px;color:var(--mute);letter-spacing:.14em;margin-bottom:14px}
-  .stem{font-family:var(--serif);font-size:clamp(17px,2.6vw,20px);line-height:1.45;margin:8px 0 22px}
-  .stem .seq{font-family:var(--mono);letter-spacing:.04em}
-  .opts{display:flex;flex-direction:column;gap:9px}
-  .opt{display:flex;gap:14px;align-items:flex-start;background:var(--ink);border:1px solid var(--steel);
-    color:var(--paper);border-radius:2px;padding:14px 16px;text-align:left;font-size:15px;cursor:pointer;width:100%;
-    transition:border-color .12s ease, background-color .12s ease}
-  .opt:hover{border-color:var(--mute)}
-  .opt .ltr{font-family:var(--mono);font-size:12px;color:var(--brass);padding-top:2px}
-  .opt.sel{border-color:var(--brass);background:#1F2A38}
-  .foot{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:14px}
-  .alarm{background:#2A1A18;border:1px solid var(--signal);color:var(--signal);
-    font-size:13px;padding:11px 14px;border-radius:2px;margin-bottom:16px;font-family:var(--mono)}
-  .score{display:flex;align-items:baseline;gap:12px;margin:4px 0 2px}
-  .score b{font-family:var(--mono);font-size:64px;font-weight:600;line-height:1;letter-spacing:-.03em}
-  .score i{font-family:var(--mono);font-style:normal;font-size:19px;color:var(--mute)}
-  .band{font-family:var(--mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-top:6px}
-  table{width:100%;border-collapse:collapse;font-size:14px}
-  th{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);
-    text-align:left;font-weight:400;padding:9px 8px;border-bottom:1px solid var(--steel)}
-  td{padding:10px 8px;border-bottom:1px solid var(--steel)}
-  .rev{border-left:2px solid var(--steel);padding:12px 0 12px 16px;margin-bottom:14px}
-  .rev.good{border-left-color:var(--verd)}
-  .rev.bad{border-left-color:var(--signal)}
-  .rev h4{margin:0 0 7px;font-size:14.5px;font-weight:600;font-family:var(--serif)}
-  .rev p{margin:4px 0;font-size:13.5px}
-  .tag{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
-  .tag.good{color:var(--verd)}
-  .tag.bad{color:var(--signal)}
-  .why{color:var(--mute);font-size:13px}
+  .rules li{display:flex;gap:16px;padding:12px 0;border-bottom:1px solid #E2DAD1;font-size:15.5px}
+  .rules li:last-child{border-bottom:0;padding-bottom:0}
+  .rules b.n{font-family:var(--display);font-size:22px;color:var(--red);min-width:26px;line-height:1.1}
+
+  /* ---- inputs ---- */
+  .field{margin:24px 0 4px}
+  label{display:block;font-family:var(--data);font-size:10px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--steel);margin-bottom:9px}
+  input[type=text],input[type=email]{width:100%;background:var(--paper);border:2px solid var(--ink);
+    color:var(--ink);padding:14px;font-size:16px;font-family:var(--body);border-radius:0}
+  input:focus{outline:none;border-color:var(--red)}
+  input.code{font-family:var(--data);font-size:26px;letter-spacing:.55em;text-align:center;font-weight:700}
+  .err{color:var(--red);font-family:var(--data);font-size:12px;margin-top:12px;min-height:16px;letter-spacing:.04em}
+
+  /* ---- buttons ---- */
+  .btn{background:var(--ink);color:var(--paper);border:2px solid var(--ink);border-radius:0;
+    padding:13px 30px;font-family:var(--display);font-size:17px;letter-spacing:.1em;cursor:pointer;
+    transition:background .12s ease,color .12s ease}
+  .btn:hover:not(:disabled){background:var(--red);border-color:var(--red)}
+  .btn:disabled{background:transparent;color:#C9C0B6;border-color:#DDD4C9;cursor:not-allowed}
+  .btn.ghost{background:transparent;color:var(--ink)}
+  .btn.ghost:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  :focus-visible{outline:3px solid var(--red);outline-offset:2px}
+  .foot{display:flex;justify-content:space-between;align-items:center;margin-top:26px;gap:14px}
+
+  /* ---- progress + timer ---- */
+  .prog{display:flex;gap:4px;margin-bottom:18px}
+  .tick{flex:1;height:9px;background:transparent;border:1.5px solid var(--ink)}
+  .tick.done{background:var(--ink)}
+  .tick.now{background:var(--red);border-color:var(--red)}
+
+  .timer{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+  .timer .num{font-family:var(--display);font-size:44px;line-height:.85;min-width:98px;
+    font-variant-numeric:tabular-nums;letter-spacing:.02em}
+  .timer .track{flex:1;height:16px;border:2px solid var(--ink);background:var(--card);position:relative;overflow:hidden}
+  .timer .fill{position:absolute;left:0;top:0;bottom:0;background:var(--ink);
+    transition:width .3s linear,background-color .3s ease}
+  .timer .cap{font-family:var(--data);font-size:9.5px;letter-spacing:.2em;color:var(--steel);text-transform:uppercase}
+  .low .num{color:var(--red)}
+  .low .fill{background:var(--red)}
+  .low .track{border-color:var(--red);animation:flash 1s steps(2,end) infinite}
+  @keyframes flash{50%{background:#F7E4E1}}
+
+  /* ---- question ---- */
+  .qtop{display:flex;align-items:baseline;gap:14px;margin-bottom:4px;flex-wrap:wrap}
+  .qtop .big{font-family:var(--display);font-size:30px;line-height:1;color:var(--red)}
+  .qtop .sec{font-family:var(--data);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--leather)}
+  .stem{font-family:var(--body);font-size:clamp(18px,2.7vw,21px);line-height:1.5;margin:14px 0 24px}
+  .stem em{font-style:italic}
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .opt{display:flex;align-items:stretch;gap:0;background:var(--card);border:2px solid var(--ink);
+    color:var(--ink);padding:0;text-align:left;font-size:16px;font-family:var(--body);
+    cursor:pointer;width:100%;transition:background .1s ease,color .1s ease}
+  .opt .ltr{background:var(--ink);color:var(--paper);font-family:var(--display);font-size:19px;
+    width:46px;flex:0 0 46px;display:flex;align-items:center;justify-content:center;transition:background .1s ease}
+  .opt .txt{padding:13px 16px}
+  .opt:hover{background:#F0EAE2}
+  .opt.sel{background:var(--ink);color:var(--paper)}
+  .opt.sel .ltr{background:var(--red)}
+  .alarm{border:2px solid var(--red);border-left-width:9px;background:#F9E9E7;color:var(--red);
+    font-family:var(--data);font-size:12.5px;letter-spacing:.03em;padding:12px 16px;margin-bottom:18px}
+
+  /* ---- result ---- */
+  .verdict{display:flex;align-items:center;gap:28px;flex-wrap:wrap}
+  .bigscore{font-family:var(--display);font-size:98px;line-height:.8;letter-spacing:.01em}
+  .bigscore small{font-size:26px;color:var(--steel);letter-spacing:.06em}
+  .stamp{display:inline-block;border:3px double var(--red);color:var(--red);font-family:var(--display);
+    font-size:clamp(24px,4.4vw,34px);letter-spacing:.1em;padding:8px 20px 5px;
+    transform:rotate(-4deg);box-shadow:inset 0 0 0 1px var(--red);opacity:.9}
+  .stamp small{display:block;font-family:var(--data);font-size:9px;letter-spacing:.16em;
+    opacity:.85;transform:none;margin-top:3px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  th{font-family:var(--data);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--steel);
+    text-align:left;font-weight:400;padding:9px 8px;border-bottom:2px solid var(--ink)}
+  td{padding:11px 8px;border-bottom:1px solid #E2DAD1;font-family:var(--body)}
+  td.n{font-family:var(--data);font-size:13.5px}
+  .rev{border-left:5px solid var(--steel);background:var(--card);border-top:1px solid #E2DAD1;
+    border-right:1px solid #E2DAD1;border-bottom:1px solid #E2DAD1;padding:16px 18px;margin-bottom:14px}
+  .rev.good{border-left-color:var(--olive)}
+  .rev.bad{border-left-color:var(--red)}
+  .rev h4{margin:8px 0 10px;font-size:16px;font-weight:normal;font-family:var(--body)}
+  .rev p{margin:5px 0;font-size:14.5px}
+  .tag{font-family:var(--data);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase}
+  .tag.good{color:var(--olive)}
+  .tag.bad{color:var(--red)}
+  .why{color:#6B6259;font-size:14px;font-style:italic;margin-top:10px}
   .hide{display:none}
+
   @media (max-width:560px){
-    .qgrid{grid-template-columns:1fr;gap:16px}
-    .tube{display:none}
-    .gauge{display:flex;align-items:baseline;gap:10px}
-    .gauge .unit{margin:0}
-    .panel{padding:18px}
+    .card{padding:18px}
+    .cardhead{margin:-18px -18px 18px;padding:8px 18px;font-size:17px}
+    .timer .num{font-size:34px;min-width:74px}
+    .bigscore{font-size:74px}
     .foot{flex-direction:column-reverse;align-items:stretch}
     .foot .btn{width:100%}
+    .verdict{gap:16px}
   }
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
 <div class="wrap">
 
+  <div class="mast">
+    <div>
+      <h1>Aptitude &amp; Reasoning</h1>
+      <div class="sub" id="mastSub">Internal assessment &middot; 20 questions</div>
+    </div>
+    <div class="serial" id="serial">Form AR-20<br>Rev. 2026</div>
+  </div>
+
   <section id="gate" class="hide">
-    <div class="eyebrow">Internal Assessment</div>
-    <h1>Verify your identity</h1>
-    <p class="muted" style="margin-top:0">Use your company email address. A one-time code will be sent to it.</p>
-    <hr class="rule">
-    <div class="panel">
+    <div class="card">
+      <div class="cardhead">Verify your identity</div>
       <div id="stepEmail">
+        <p style="margin-top:0">Use your company email address. A one-time code will be sent to it.</p>
         <div class="field">
           <label for="mail">Company email</label>
           <input id="mail" type="email" placeholder="you@firstmfg.com" autocomplete="email">
         </div>
         <div class="err" id="mailErr"></div>
-        <div class="foot" style="margin-top:8px"><span></span>
-          <button class="btn" id="sendCode">Send code</button></div>
+        <div class="foot"><span></span><button class="btn" id="sendCode">Send code</button></div>
       </div>
       <div id="stepCode" class="hide">
+        <p style="margin-top:0">Enter the six digits we just emailed you.</p>
         <div class="field">
-          <label for="code">Six-digit code</label>
+          <label for="code">One-time code</label>
           <input id="code" class="code" type="text" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code">
         </div>
         <div class="err" id="codeErr"></div>
-        <div class="foot" style="margin-top:8px">
-          <button class="btn ghost" id="backEmail">Use another email</button>
+        <div class="foot">
+          <button class="btn ghost" id="backEmail">Another email</button>
           <button class="btn" id="checkCode">Verify</button></div>
       </div>
     </div>
   </section>
 
   <section id="start" class="hide">
-    <div class="eyebrow" id="whoStart">Internal Assessment</div>
-    <h1>Aptitude &amp; Reasoning Test</h1>
-    <p class="muted" style="margin-top:0">20 questions &middot; one at a time &middot; each with its own countdown</p>
-    <hr class="rule">
-    <div class="panel">
+    <div class="card">
+      <div class="cardhead">Before you begin</div>
       <ul class="rules">
-        <li><span>01</span><div>Your paper is generated fresh. Nobody else gets the same 20 questions, and neither will you if you sit it again.</div></li>
-        <li><span>02</span><div>Each question has its own time limit, shown on the left. When it runs out the test moves on by itself.</div></li>
-        <li><span>03</span><div>You cannot go back. Answer, then continue.</div></li>
-        <li><span>04</span><div><b style="color:var(--signal)">Leaving this tab or window costs you a point each time.</b> The clock keeps running while you are away.</div></li>
-        <li><span>05</span><div>No calculator, no phone. Pen and paper for rough work is fine.</div></li>
-        <li><span>06</span><div>Your score and full worked solutions appear the moment you finish.</div></li>
+        <li><b class="n">01</b><div>Your paper is generated fresh. Nobody else gets the same 20 questions, and neither will you if you sit it again.</div></li>
+        <li><b class="n">02</b><div>Every question carries its own clock. When it runs out, the test moves on without you.</div></li>
+        <li><b class="n">03</b><div>There is no going back. Answer, then continue.</div></li>
+        <li><b class="n">04</b><div><b style="color:var(--red)">Leaving this tab costs you a point each time.</b> The clock keeps running while you are away.</div></li>
+        <li><b class="n">05</b><div>No calculator, no phone. Pen and paper for rough work is fine.</div></li>
+        <li><b class="n">06</b><div>Your score and every worked solution appear the moment you finish.</div></li>
       </ul>
       <div class="field" id="nameField">
         <label for="who">Your name</label>
         <input id="who" type="text" placeholder="Type your full name" autocomplete="off">
       </div>
-      <div class="foot" style="margin-top:0">
-        <span></span>
-        <button class="btn" id="go">Begin test</button>
-      </div>
-      <p class="muted" style="font-size:12.5px;margin:16px 0 0" id="privacyNote">Your name, score and answers are recorded for the assessment.</p>
+      <div class="foot"><span class="label" id="privacyNote">Recorded for the assessment</span>
+        <button class="btn" id="go">Begin test</button></div>
     </div>
   </section>
 
   <section id="quiz" class="hide">
-    <div class="ticks" id="ticks"></div>
+    <div class="prog" id="ticks"></div>
+    <div class="timer" id="gauge">
+      <div class="num" id="clock">0:00</div>
+      <div style="flex:1">
+        <div class="cap">Time remaining on this question</div>
+        <div class="track" style="margin-top:6px"><div class="fill" id="fluid" style="width:100%"></div></div>
+      </div>
+    </div>
     <div class="alarm hide" id="alarm"></div>
-    <div class="panel">
-      <div class="qgrid">
-        <div class="gauge" id="gauge">
-          <div class="clock" id="clock">0:00</div>
-          <div class="unit">Left</div>
-          <div class="tube"><div class="fluid" id="fluid" style="height:100%"></div></div>
-        </div>
-        <div>
-          <div class="qnum" id="qnum"></div>
-          <div class="eyebrow" id="sect"></div>
-          <div class="stem" id="stem"></div>
-          <div class="opts" id="opts"></div>
-          <div class="foot">
-            <div class="muted" style="font-size:12.5px" id="hint">Pick one answer.</div>
-            <button class="btn" id="next" disabled>Next</button>
-          </div>
-        </div>
+    <div class="card">
+      <div class="qtop">
+        <span class="big" id="qnum">01</span>
+        <span class="sec" id="sect"></span>
+      </div>
+      <div class="stem" id="stem"></div>
+      <div class="opts" id="opts"></div>
+      <div class="foot">
+        <span class="label" id="hint">Pick one answer</span>
+        <button class="btn" id="next" disabled>Next</button>
       </div>
     </div>
   </section>
 
   <section id="done" class="hide">
-    <div class="eyebrow" id="whoDone"></div>
-    <h1>Result</h1>
-    <div class="panel">
-      <div class="score"><b id="pts">0</b><i id="ptsOf">/ 20</i></div>
-      <div class="band" id="band"></div>
-      <div class="muted" style="font-size:13px;margin-top:10px" id="penaltyLine"></div>
-      <hr class="rule">
-      <table>
-        <thead><tr><th>Section</th><th style="text-align:right">Score</th><th style="text-align:right">Time used</th></tr></thead>
+    <div class="card">
+      <div class="cardhead" id="whoDone">Result</div>
+      <div class="verdict">
+        <div class="bigscore"><span id="pts">0</span><small id="ptsOf">/20</small></div>
+        <div class="stamp" id="stamp">&nbsp;<small id="stampSub"></small></div>
+      </div>
+      <p class="label" style="margin:22px 0 0" id="penaltyLine"></p>
+      <table style="margin-top:20px">
+        <thead><tr><th>Section</th><th style="text-align:right">Score</th><th style="text-align:right">Time</th></tr></thead>
         <tbody id="secTable"></tbody>
       </table>
       <div class="foot">
-        <span class="muted" style="font-size:12.5px" id="saveNote"></span>
-        <button class="btn ghost" id="again">Take a fresh paper</button>
+        <span class="label" id="saveNote"></span>
+        <button class="btn ghost" id="again">Fresh paper</button>
       </div>
     </div>
-    <hr class="rule">
-    <div class="eyebrow">Every question, with working</div>
-    <div id="review" style="margin-top:18px"></div>
+    <div class="label" style="margin:30px 0 14px">Every question, with working</div>
+    <div id="review"></div>
   </section>
 
 </div>
 
 <script src="engine.js"></script>
 <script>
-/* ============ CONFIG ============
-   Paste your Google Apps Script web-app URL into VERIFY_ENDPOINT to turn on
-   email verification and central result collection. See the README. */
 const VERIFY_ENDPOINT = "https://script.google.com/macros/s/AKfycbw3CERsTbFcVYDY3tD6wmhE6hT7t2nJJf02oWQULVjtMpMsV6nTlim33-9HoxTlRhgZ/exec";
 const ALLOWED_DOMAIN  = "firstmfg.com";
 const SWITCH_PENALTY  = 1;
@@ -215,19 +255,17 @@ let Q = [], seed = 0, idx = 0, picked = null, answers = [], spent = [];
 let left = 0, tick = null, deadline = 0, running = false;
 let name = "", email = "", token = "", switches = 0, awayLock = false;
 
-/* ============ TAB-SWITCH WATCH ============ */
 function flagAway(){
   if (!running || awayLock) return;
   awayLock = true; setTimeout(()=>{ awayLock = false; }, 1500);
   switches++;
   const al = $("alarm");
   al.classList.remove("hide");
-  al.textContent = `You left the test ${switches} time${switches>1?"s":""}. Penalty so far: \u2212${switches*SWITCH_PENALTY} point${switches*SWITCH_PENALTY>1?"s":""}.`;
+  al.textContent = `LEFT THE TEST ${switches} TIME${switches>1?"S":""} \u2014 PENALTY \u2212${switches*SWITCH_PENALTY}`;
 }
 document.addEventListener("visibilitychange", ()=>{ if (document.hidden) flagAway(); });
 window.addEventListener("blur", flagAway);
 
-/* ============ JSONP ============ */
 function jsonp(params){
   return new Promise((resolve, reject)=>{
     const cb = "cb" + Math.random().toString(36).slice(2,9);
@@ -242,12 +280,11 @@ function jsonp(params){
   });
 }
 
-/* ============ VERIFICATION ============ */
 $("sendCode").onclick = async () => {
   const v = $("mail").value.trim().toLowerCase();
   const err = $("mailErr");
-  if (!v.endsWith("@" + ALLOWED_DOMAIN)){ err.textContent = `Use your @${ALLOWED_DOMAIN} address.`; return; }
-  err.textContent = "Sending...";
+  if (!v.endsWith("@" + ALLOWED_DOMAIN)){ err.textContent = `USE YOUR @${ALLOWED_DOMAIN.toUpperCase()} ADDRESS`; return; }
+  err.textContent = "SENDING...";
   $("sendCode").disabled = true;
   try{
     const r = await jsonp({action:"send", email:v});
@@ -257,16 +294,16 @@ $("sendCode").onclick = async () => {
       $("stepCode").classList.remove("hide");
       $("code").focus();
       err.textContent = "";
-    } else err.textContent = (r && r.error) || "Could not send the code.";
-  }catch(e){ err.textContent = "Could not reach the verification service. Try again."; }
+    } else err.textContent = ((r && r.error) || "Could not send the code.").toUpperCase();
+  }catch(e){ err.textContent = "COULD NOT REACH THE SERVICE. TRY AGAIN."; }
   $("sendCode").disabled = false;
 };
 
 $("checkCode").onclick = async () => {
   const c = $("code").value.trim();
   const err = $("codeErr");
-  if (!/^\d{6}$/.test(c)){ err.textContent = "Enter the six digits from the email."; return; }
-  err.textContent = "Checking...";
+  if (!/^\d{6}$/.test(c)){ err.textContent = "ENTER THE SIX DIGITS"; return; }
+  err.textContent = "CHECKING...";
   $("checkCode").disabled = true;
   try{
     const r = await jsonp({action:"verify", email:email, code:c});
@@ -275,12 +312,12 @@ $("checkCode").onclick = async () => {
       name = r.name || email.split("@")[0];
       $("gate").classList.add("hide");
       $("start").classList.remove("hide");
-      $("whoStart").textContent = email;
+      $("mastSub").textContent = email;
       $("nameField").classList.add("hide");
-      $("privacyNote").textContent = "Your result is recorded centrally against this email address.";
+      $("privacyNote").textContent = "Recorded against " + email;
       err.textContent = "";
-    } else err.textContent = (r && r.error) || "That code did not match.";
-  }catch(e){ err.textContent = "Could not reach the verification service. Try again."; }
+    } else err.textContent = ((r && r.error) || "That code did not match.").toUpperCase();
+  }catch(e){ err.textContent = "COULD NOT REACH THE SERVICE. TRY AGAIN."; }
   $("checkCode").disabled = false;
 };
 
@@ -295,7 +332,6 @@ $("code").addEventListener("keydown", e => { if (e.key === "Enter") $("checkCode
 if (VERIFY_ENDPOINT) $("gate").classList.remove("hide");
 else $("start").classList.remove("hide");
 
-/* ============ RUN ============ */
 $("go").onclick = () => {
   if (!VERIFY_ENDPOINT) name = $("who").value.trim() || "Unnamed";
   seed = (Date.now() ^ Math.floor(Math.random()*1e9)) | 0;
@@ -307,6 +343,7 @@ $("go").onclick = () => {
   $("start").classList.add("hide");
   $("done").classList.add("hide");
   $("quiz").classList.remove("hide");
+  $("serial").innerHTML = "Paper no.<br>" + String(seed >>> 0).slice(0,8);
   running = true;
   $("ticks").innerHTML = Q.map(()=>'<div class="tick"></div>').join("");
   show();
@@ -323,22 +360,22 @@ function show(){
   const q = Q[idx];
   picked = null;
   paintTicks();
-  $("qnum").textContent = `Question ${idx+1} of ${Q.length}`;
-  $("sect").textContent = q.s;
+  $("qnum").textContent = String(idx+1).padStart(2,"0");
+  $("sect").textContent = q.s + " \u00B7 " + (idx+1) + " of " + Q.length;
   $("stem").innerHTML = q.q;
   $("opts").innerHTML = q.o.map((o,i)=>
-    `<button class="opt" data-i="${i}"><span class="ltr">${"ABCD"[i]}</span><span>${o}</span></button>`).join("");
+    `<button class="opt" data-i="${i}"><span class="ltr">${"ABCD"[i]}</span><span class="txt">${o}</span></button>`).join("");
   const btns = $("opts").querySelectorAll(".opt");
   btns.forEach(b => b.onclick = () => {
     picked = +b.dataset.i;
     btns.forEach(x => x.classList.remove("sel"));
     b.classList.add("sel");
     $("next").disabled = false;
-    $("hint").textContent = idx === Q.length-1 ? "Finishing locks your answers." : "You cannot come back to this one.";
+    $("hint").textContent = idx === Q.length-1 ? "Finishing locks your answers" : "No going back after this";
   });
   $("next").disabled = true;
   $("next").textContent = idx === Q.length-1 ? "Finish" : "Next";
-  $("hint").textContent = "Pick one answer.";
+  $("hint").textContent = "Pick one answer";
   startClock(q.t);
 }
 
@@ -350,7 +387,7 @@ function startClock(sec){
     left = Math.max(0, Math.round((deadline - Date.now())/1000));
     const m = Math.floor(left/60), s = String(left%60).padStart(2,"0");
     $("clock").textContent = `${m}:${s}`;
-    $("fluid").style.height = Math.max(0,(left/sec)*100) + "%";
+    $("fluid").style.width = Math.max(0,(left/sec)*100) + "%";
     if (left <= 15) $("gauge").classList.add("low");
   };
   render();
@@ -377,16 +414,19 @@ function finish(){
   const raw = answers.reduce((n,a,i)=> n + (a === Q[i].a ? 1 : 0), 0);
   const penalty = switches * SWITCH_PENALTY;
   const finalScore = Math.max(0, raw - penalty);
+  const band = bandFor(finalScore);
 
   $("pts").textContent = finalScore;
-  $("ptsOf").textContent = `/ ${Q.length}`;
-  $("whoDone").textContent = VERIFY_ENDPOINT ? email : name;
-  const band = bandFor(finalScore);
-  $("band").textContent = band[1] + " \u00B7 " + band[2];
-  $("band").style.color = band[3];
+  $("ptsOf").textContent = "/" + Q.length;
+  $("whoDone").textContent = (VERIFY_ENDPOINT ? email : name) + " \u00B7 Result";
+  $("stamp").firstChild.nodeValue = band[1].toUpperCase();
+  $("stampSub").textContent = band[2].toUpperCase();
+  $("stamp").style.color = band[3] === "var(--verd)" ? "var(--olive)" : band[3] === "var(--brass)" ? "var(--leather)" : "var(--red)";
+  $("stamp").style.borderColor = $("stamp").style.color;
+  $("stamp").style.boxShadow = "inset 0 0 0 1px " + $("stamp").style.color;
   $("penaltyLine").textContent = penalty
-    ? `${raw} correct, minus ${penalty} for leaving the test ${switches} time${switches>1?"s":""}.`
-    : `${raw} correct. No tab switches recorded.`;
+    ? `${raw} correct, minus ${penalty} for leaving the test ${switches} time${switches>1?"s":""}`
+    : `${raw} correct \u00B7 no tab switches recorded`;
 
   const secs = {};
   Q.forEach((q,i)=>{
@@ -397,19 +437,19 @@ function finish(){
   });
   $("secTable").innerHTML = Object.keys(secs).map(k=>{
     const v = secs[k];
-    return `<tr><td>${k}</td><td style="text-align:right">${v.c} / ${v.n}</td><td style="text-align:right">${fmt(v.t)}</td></tr>`;
+    return `<tr><td>${k}</td><td class="n" style="text-align:right">${v.c} / ${v.n}</td><td class="n" style="text-align:right">${fmt(v.t)}</td></tr>`;
   }).join("")
-    + `<tr><td><b>Total correct</b></td><td style="text-align:right"><b>${raw} / ${Q.length}</b></td>`
-    + `<td style="text-align:right"><b>${fmt(spent.reduce((a,b)=>a+b,0))}</b></td></tr>`;
+    + `<tr><td><b>Total correct</b></td><td class="n" style="text-align:right"><b>${raw} / ${Q.length}</b></td>`
+    + `<td class="n" style="text-align:right"><b>${fmt(spent.reduce((a,b)=>a+b,0))}</b></td></tr>`;
 
   $("review").innerHTML = Q.map((q,i)=>{
     const a = answers[i], ok = a === q.a;
     const given = (a === null || a === undefined) ? "No answer, ran out of time" : `${"ABCD"[a]}) ${q.o[a]}`;
     return `<div class="rev ${ok?"good":"bad"}">
-      <span class="tag ${ok?"good":"bad"}">${ok?"Correct":"Missed"} &middot; Q${i+1} &middot; ${fmt(spent[i])}</span>
+      <span class="tag ${ok?"good":"bad"}">${ok?"Correct":"Missed"} &middot; Q${String(i+1).padStart(2,"0")} &middot; ${q.s} &middot; ${fmt(spent[i])}</span>
       <h4>${q.q}</h4>
       <p>Your answer: ${given}</p>
-      ${ok?"":`<p>Correct: ${"ABCD"[q.a]}) ${q.o[q.a]}</p>`}
+      ${ok?"":`<p><b>Correct: ${"ABCD"[q.a]}) ${q.o[q.a]}</b></p>`}
       <p class="why">${q.w}</p>
     </div>`;
   }).join("");
@@ -421,10 +461,10 @@ const fmt = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
 $("again").onclick = () => {
   $("done").classList.add("hide");
   $("start").classList.remove("hide");
+  $("serial").innerHTML = "Form AR-20<br>Rev. 2026";
   window.scrollTo(0,0);
 };
 
-/* ============ SAVE ============ */
 async function save(raw, penalty, finalScore){
   const ansStr = answers.map(a => (a === null || a === undefined) ? "-" : String(a)).join("");
   const record = {
@@ -434,20 +474,20 @@ async function save(raw, penalty, finalScore){
     when:new Date().toISOString()
   };
   if (VERIFY_ENDPOINT){
-    $("saveNote").textContent = "Saving your result...";
+    $("saveNote").textContent = "Saving...";
     try{
       await jsonp({action:"submit", email:email, token:token, seed:seed, ans:ansStr,
         times:record.times, raw:raw, penalty:penalty, score:finalScore,
         total:Q.length, switches:switches, time:record.time});
-      $("saveNote").textContent = "Result saved.";
-    }catch(e){ $("saveNote").textContent = "Could not save automatically. Screenshot this page."; }
+      $("saveNote").textContent = "Result saved";
+    }catch(e){ $("saveNote").textContent = "Not saved \u2014 screenshot this page"; }
     return;
   }
   try{
     const all = JSON.parse(localStorage.getItem("apt_results") || "[]");
     all.push(record);
     localStorage.setItem("apt_results", JSON.stringify(all));
-    $("saveNote").textContent = "Saved on this device.";
+    $("saveNote").textContent = "Saved on this device";
   }catch(e){}
 }
 </script>
