@@ -590,6 +590,10 @@ function bandFor(score){ return BANDS.find(b => score >= b[0]); }
 const ALLOWED_DOMAIN   = 'firstmfg.com';
 const ADMIN_KEY        = 'change-this-to-something-long';   // <-- CHANGE THIS
 const ONE_ATTEMPT_ONLY = true;    // false to allow retakes
+/* These addresses can sit the test as often as they like. Everyone else gets
+   exactly one run: the attempt is spent the moment a paper is handed out, so
+   abandoning halfway does not buy a second go. */
+const UNLIMITED_EMAILS = ['jibran@firstmfg.com'];
 const CODE_MINUTES     = 15;
 const PENALTY_PER_FLAG = 1;       // cost of a tab switch or a copy attempt
 
@@ -621,6 +625,27 @@ function hasCompleted(email) {
     if (String(rows[i][1]).toLowerCase() === email) return true;
   }
   return false;
+}
+
+function isUnlimited(email) {
+  return UNLIMITED_EMAILS.indexOf(String(email).toLowerCase().trim()) > -1;
+}
+
+/* True once a paper has ever been handed to this address, submitted or not. */
+function hasStarted(email) {
+  const rows = sessionsTab().getDataRange().getValues();
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][1]).toLowerCase() === email) return true;
+  }
+  return false;
+}
+
+/* One run each. Spent at start, not at submit. */
+function attemptSpent(email) {
+  if (!ONE_ATTEMPT_ONLY || isUnlimited(email)) return null;
+  if (hasCompleted(email)) return 'You have already completed this test.';
+  if (hasStarted(email))   return 'A paper was already issued to this address. Only one run each.';
+  return null;
 }
 
 function tokenValid(email, token) {
@@ -655,9 +680,8 @@ function handle(p) {
     if (email.slice(-(ALLOWED_DOMAIN.length + 1)) !== '@' + ALLOWED_DOMAIN) {
       return { ok: false, error: 'Use your @' + ALLOWED_DOMAIN + ' address.' };
     }
-    if (ONE_ATTEMPT_ONLY && hasCompleted(email)) {
-      return { ok: false, error: 'This address has already completed the test.' };
-    }
+    const spent = attemptSpent(email);
+    if (spent) return { ok: false, error: spent };
     const code  = String(Math.floor(100000 + Math.random() * 900000));
     const token = Utilities.getUuid();
     codesTab().appendRow([email, code, token, new Date(Date.now() + CODE_MINUTES * 60000), 'no']);
@@ -669,6 +693,8 @@ function handle(p) {
 
   /* ---------- 2. verify the code ---------- */
   if (p.action === 'verify') {
+    const spentV = attemptSpent(email);
+    if (spentV) return { ok: false, error: spentV };
     const sh = codesTab(), rows = sh.getDataRange().getValues();
     for (let i = rows.length - 1; i >= 1; i--) {
       if (String(rows[i][0]).toLowerCase() === email &&
@@ -685,9 +711,8 @@ function handle(p) {
   /* ---------- 3. hand out a paper, WITHOUT the answers ---------- */
   if (p.action === 'start') {
     if (!tokenValid(email, p.token)) return { ok: false, error: 'Session not recognised.' };
-    if (ONE_ATTEMPT_ONLY && hasCompleted(email)) {
-      return { ok: false, error: 'This address has already completed the test.' };
-    }
+    const spentS = attemptSpent(email);
+    if (spentS) return { ok: false, error: spentS };
     const seed    = Math.floor(Math.random() * 2000000000) - 1000000000;
     const session = Utilities.getUuid();
     const paper   = paperFromSeed(seed);
