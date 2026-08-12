@@ -684,13 +684,16 @@ const HARDFAM2 = ["prob","clock","rate","pctchain","rate","socks",
 const FAMILY_CAP = 2;
 
 function buildPaper(){
-  const picked = { Easy: [], Medium: [], Hard: [] };
+  const picked = { Easy: [], Medium: [], Hard: [], Judgement: [] };
   const famUsed = {};
   /* seconds allowed per question, by difficulty */
-  const CLOCK = { Easy: 30, Medium: 45, Hard: 60 };
-  const tiers = [["Hard", HARDGEN2, HARDFAM2, 6],
-                 ["Medium", MEDGEN2, MEDFAM2, 8],
-                 ["Easy", EASYGEN2, EASYFAM2, 6]];
+  const CLOCK = { Easy: 30, Medium: 45, Hard: 60, Judgement: 60 };
+  const JUDGEFAM = ["late","credit","deadline","criticism","mistake",
+                    "priority","newstarter","refund","commit","overload"];
+  const tiers = [["Judgement", JUDGEGEN, JUDGEFAM, 5],
+                 ["Hard", HARDGEN2, HARDFAM2, 4],
+                 ["Medium", MEDGEN2, MEDFAM2, 6],
+                 ["Easy", EASYGEN2, EASYFAM2, 5]];
 
   for (const tier of tiers){
     const label = tier[0], pool = tier[1], fams = tier[2], count = tier[3];
@@ -710,7 +713,7 @@ function buildPaper(){
     }
     if (taken < count) return null;
   }
-  return picked.Easy.concat(picked.Medium, picked.Hard);
+  return picked.Easy.concat(picked.Medium, picked.Hard, picked.Judgement);
 }
 
 /* Rebuild the exact paper a candidate sat, from its seed. */
