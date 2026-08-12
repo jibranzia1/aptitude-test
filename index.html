@@ -245,6 +245,12 @@
     .opt .ltr{ width:38px;flex:0 0 38px }
   }
 
+  .notice{border:2px solid var(--ink);border-left-width:9px;border-left-color:var(--red);
+    background:#FBF7F3;padding:16px 18px;margin:0 0 22px;position:relative;z-index:1}
+  .notice .h{font-family:var(--display);font-size:19px;letter-spacing:.06em;color:var(--red);margin-bottom:8px}
+  .notice ul{list-style:none;padding:0;margin:0}
+  .notice li{display:flex;gap:10px;font-size:14.5px;padding:5px 0;line-height:1.5}
+  .notice li::before{content:"\2014";color:var(--red);flex:0 0 auto}
   .hide{display:none}
   body.locked #quiz, body.locked #quiz *{-webkit-user-select:none;-moz-user-select:none;user-select:none}
 
@@ -278,6 +284,16 @@
       <div class="cardhead">Who is riding</div>
       <div id="stepEmail">
         <p style="margin-top:0">Your company email, so the result carries your name. A one-time code goes out to it.</p>
+        <div class="notice">
+          <div class="h">Read this before you enter your email</div>
+          <ul>
+            <li>You get one run. It is spent the moment your paper is issued, not when you finish.</li>
+            <li>Closing the tab, refreshing, or losing connection ends that run for good. There is no way back in.</li>
+            <li>Set aside 15 uninterrupted minutes. 20 questions, each on its own clock, and no going back.</li>
+            <li>Leaving the tab or trying to copy text costs a point every time.</li>
+            <li>Sit it somewhere quiet on a steady connection. Not between meetings.</li>
+          </ul>
+        </div>
         <div class="field">
           <label for="mail">Company email</label>
           <input id="mail" type="email" placeholder="you@firstmfg.com" autocomplete="email">
@@ -288,6 +304,13 @@
       </div>
       <div id="stepCode" class="hide">
         <p style="margin-top:0" id="codeSent">Enter the six digits we just emailed you.</p>
+        <div class="notice">
+          <div class="h">Last stop before the clock starts</div>
+          <ul>
+            <li>Verifying does not start the test. You get the rules first, then you choose when to set off.</li>
+            <li>Once you press start, the clock runs and your one attempt is spent.</li>
+          </ul>
+        </div>
         <div class="field">
           <label for="code">One-time code</label>
           <input id="code" class="code" type="text" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code">
