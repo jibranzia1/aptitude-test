@@ -672,6 +672,22 @@ function markPaper(seed, ansStr, timesStr) {
   return { raw: raw, review: review, total: paper.length };
 }
 
+
+/* Rebuild a result that was already recorded, for a retried submit. */
+function replayResult(email, session, seed) {
+  const data = resultsTab().getDataRange().getValues();
+  for (let i = data.length - 1; i >= 1; i--) {
+    if (String(data[i][12]) === String(session)) {
+      const marked = markPaper(data[i][9], data[i][10], data[i][11]);
+      if (!marked) return { ok: false, error: 'Could not rebuild the paper.' };
+      const b = bandFor(Number(data[i][2]));
+      return { ok: true, raw: data[i][4], penalty: data[i][5], score: data[i][2],
+               total: data[i][3], band: [b[1], b[2]], review: marked.review };
+    }
+  }
+  return { ok: false, error: 'This paper was already submitted.' };
+}
+
 function handle(p) {
   const email = String(p.email || '').toLowerCase().trim();
 
@@ -732,8 +748,11 @@ function handle(p) {
     let row = -1, seed = null;
     for (let i = rows.length - 1; i >= 1; i--) {
       if (String(rows[i][0]) === String(p.session) && String(rows[i][1]).toLowerCase() === email) {
-        if (String(rows[i][4]) === 'yes') return { ok: false, error: 'This paper was already submitted.' };
-        row = i + 1; seed = rows[i][2]; break;
+        row = i + 1; seed = rows[i][2];
+        /* Already submitted: the reply was probably lost in transit. Hand back
+           the stored result instead of an error so a retry is harmless. */
+        if (String(rows[i][4]) === 'yes') return replayResult(email, p.session, seed);
+        break;
       }
     }
     if (row < 0) return { ok: false, error: 'Paper not found.' };
