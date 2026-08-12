@@ -518,29 +518,35 @@ function evenSteps(){
    30% easy / 40% medium / 30% hard. Hard is allocated first so it keeps
    its variety, then medium, then easy; the paper is shown easiest first. */
 
-/* Tiers are set by how long a question honestly takes, not by how clever it
-   looks. Anything that cannot be reasoned out inside its clock has been moved
-   up a tier or dropped. polySeries (n cubed series) is retired: spotting the
-   pattern and computing the sixth term cannot be done in a minute. */
+/* Every question here can be reasoned out inside its own clock by someone who
+   has never seen it before. Anything that depends on already knowing the trick
+   has been dropped, however elegant it was:
+
+     look-and-say (1, 11, 21, 1211)  you either know the rule or you never get it
+     painted cube                    needs the 12(n-2) formula, not derivable in 60s
+     two burning ropes               a flash of insight or nothing
+     four-card selection task        famously failed by most people even untimed
+     cubic number series             spotting n cubed plus kn squared takes minutes
+
+   What is left is arithmetic, deduction and set reasoning, all of which reward
+   thinking rather than recall. */
 
 const EASYGEN2 = [EASYGEN[0], EASYGEN[1], EASYGEN[2], EASYGEN[5],
                   EASYGEN[8], EASYGEN[9], EASYGEN[10], LAT[3]];
-const EASYFAM2 = ["series","percent","percent","speed",
-                  "analogy","prob","series","doubling"];
+const EASYFAM2 = ["numseries","percentof","discount","speed",
+                  "analogy","prob","missing","doubling"];
 
 const MEDGEN2  = [EASYGEN[3], EASYGEN[4], EASYGEN[6], EASYGEN[7],
-                  NUM[5], NUM[2], NUM[3],
-                  LOG[0], LOG[3], LOG[4], QUANT[3],
+                  NUM[5], NUM[2], LOG[3], LOG[4], QUANT[3],
                   LAT[1], LAT[2], LAT[4], LAT[6]];
 const MEDFAM2  = ["average","ratio","calendar","multiple",
-                  "series","series","percent",
-                  "sets","syllogism","queue","prob",
+                  "numseries","letterseries","syllogism","queue","prob",
                   "oddoneout","analogy","costtrap","handshakes"];
 
 const HARDGEN2 = [QUANT[0], QUANT[2], QUANT[4], QUANT[5], NUM[4], LAT[5],
-                  LOG[1], LOG[5], LOG[6], LOG[2], QUANT[1], LAT[0], NUM[1]];
-const HARDFAM2 = ["prob","clock","rate","percent","rate","socks",
-                  "liars","falsify","ordering","wason","cube","ropes","series"];
+                  LOG[1], LOG[5], LOG[6], LOG[0], NUM[3]];
+const HARDFAM2 = ["prob","clock","rate","pctchain","rate","socks",
+                  "liars","falsify","ordering","sets","pctrecover"];
 
 const FAMILY_CAP = 2;
 
