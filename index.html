@@ -276,7 +276,7 @@ function jsonp(params){
     const qs = Object.keys(params).map(k => encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join("&");
     s.src = VERIFY_ENDPOINT + "?callback=" + cb + "&" + qs;
     document.body.appendChild(s);
-    setTimeout(()=>{ if(!done){ try{delete window[cb];}catch(e){} s.remove(); reject(new Error("timeout")); } }, 20000);
+    setTimeout(()=>{ if(!done){ try{delete window[cb];}catch(e){} s.remove(); reject(new Error("timeout")); } }, 75000);
   });
 }
 
@@ -284,7 +284,7 @@ $("sendCode").onclick = async () => {
   const v = $("mail").value.trim().toLowerCase();
   const err = $("mailErr");
   if (!v.endsWith("@" + ALLOWED_DOMAIN)){ err.textContent = `USE YOUR @${ALLOWED_DOMAIN.toUpperCase()} ADDRESS`; return; }
-  err.textContent = "SENDING...";
+  err.textContent = "SENDING... THIS CAN TAKE UP TO A MINUTE";
   $("sendCode").disabled = true;
   try{
     const r = await jsonp({action:"send", email:v});
@@ -295,7 +295,7 @@ $("sendCode").onclick = async () => {
       $("code").focus();
       err.textContent = "";
     } else err.textContent = ((r && r.error) || "Could not send the code.").toUpperCase();
-  }catch(e){ err.textContent = "COULD NOT REACH THE SERVICE. TRY AGAIN."; }
+  }catch(e){ err.textContent = "NO RESPONSE YET. CHECK YOUR INBOX \u2014 THE CODE MAY HAVE ARRIVED. IF NOT, TRY AGAIN."; }
   $("sendCode").disabled = false;
 };
 
@@ -317,7 +317,7 @@ $("checkCode").onclick = async () => {
       $("privacyNote").textContent = "Recorded against " + email;
       err.textContent = "";
     } else err.textContent = ((r && r.error) || "That code did not match.").toUpperCase();
-  }catch(e){ err.textContent = "COULD NOT REACH THE SERVICE. TRY AGAIN."; }
+  }catch(e){ err.textContent = "NO RESPONSE. DISABLE ANY AD BLOCKER FOR THIS PAGE AND TRY AGAIN."; }
   $("checkCode").disabled = false;
 };
 
