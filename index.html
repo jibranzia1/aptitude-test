@@ -269,13 +269,16 @@ window.addEventListener("blur", flagAway);
 function jsonp(params){
   const base = (typeof VERIFY_ENDPOINT !== "undefined") ? VERIFY_ENDPOINT : ENDPOINT;
   const qs = Object.keys(params).map(k => encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join("&");
-  return fetch(base + "?callback=cb&" + qs, { method:"GET", redirect:"follow" })
+  return fetch(base + "?callback=cb&_=" + Date.now() + "&" + qs,
+               { method:"GET", redirect:"follow", credentials:"omit", cache:"no-store" })
     .then(r => r.text())
     .then(t => {
       const s = String(t).trim();
-      const i = s.indexOf("("), j = s.lastIndexOf(")");
-      const body = (i > -1 && j > i) ? s.slice(i+1, j) : s;
-      return JSON.parse(body);
+      const m = s.match(/cb\(([\s\S]*)\)\s*;?\s*$/);
+      if (m) return JSON.parse(m[1]);
+      try { return JSON.parse(s); } catch (e) {}
+      const kind = s.slice(0,60).replace(/\s+/g," ");
+      throw new Error("Server sent " + s.length + " chars, not data. Starts: " + kind);
     });
 }
 
