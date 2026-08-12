@@ -128,6 +128,8 @@
   .tag.bad{color:var(--red)}
   .why{color:#6B6259;font-size:14px;font-style:italic;margin-top:10px}
   .hide{display:none}
+  body.locked #quiz, body.locked #quiz *{-webkit-user-select:none;-moz-user-select:none;user-select:none}
+  body.locked #quiz img{-webkit-user-drag:none;user-drag:none}
 
   @media (max-width:560px){
     .card{padding:18px}
@@ -187,8 +189,9 @@
         <li><b class="n">02</b><div>Every question carries its own clock. When it runs out, the test moves on without you.</div></li>
         <li><b class="n">03</b><div>There is no going back. Answer, then continue.</div></li>
         <li><b class="n">04</b><div><b style="color:var(--red)">Leaving this tab costs you a point each time.</b> The clock keeps running while you are away.</div></li>
-        <li><b class="n">05</b><div>No calculator, no phone. Pen and paper for rough work is fine.</div></li>
-        <li><b class="n">06</b><div>Your score and every worked solution appear the moment you finish.</div></li>
+        <li><b class="n">05</b><div><b style="color:var(--red)">Selecting, copying and right-clicking are disabled.</b> Each attempt costs a point, the same as leaving the tab.</div></li>
+        <li><b class="n">06</b><div>No calculator, no phone. Pen and paper for rough work is fine.</div></li>
+        <li><b class="n">07</b><div>Your score and every worked solution appear the moment you finish.</div></li>
       </ul>
       <div class="field" id="nameField">
         <label for="who">Your name</label>
@@ -261,12 +264,39 @@ function flagAway(){
   if (!running || awayLock) return;
   awayLock = true; setTimeout(()=>{ awayLock = false; }, 1500);
   switches++;
-  const al = $("alarm");
-  al.classList.remove("hide");
-  al.textContent = `LEFT THE TEST ${switches} TIME${switches>1?"S":""} \u2014 PENALTY \u2212${switches*SWITCH_PENALTY}`;
+  banner();
 }
 document.addEventListener("visibilitychange", ()=>{ if (document.hidden) flagAway(); });
 window.addEventListener("blur", flagAway);
+
+/* ---- copy / selection deterrents ---- */
+let copyTries = 0, copyLock = false;
+function flagCopy(what){
+  if (!running || copyLock) return;
+  copyLock = true; setTimeout(()=>{ copyLock = false; }, 800);
+  copyTries++;
+  banner();
+}
+function banner(){
+  const al = $("alarm");
+  const bits = [];
+  if (switches) bits.push(`LEFT THE TEST ${switches}\u00D7`);
+  if (copyTries) bits.push(`COPY BLOCKED ${copyTries}\u00D7`);
+  if (!bits.length) return;
+  al.classList.remove("hide");
+  al.textContent = bits.join("  \u00B7  ") + `  \u00B7  PENALTY \u2212${(switches + copyTries) * SWITCH_PENALTY}`;
+}
+["copy","cut","selectstart","dragstart"].forEach(ev =>
+  document.addEventListener(ev, e => { if (running){ e.preventDefault(); flagCopy(ev); } }));
+document.addEventListener("contextmenu", e => { if (running) e.preventDefault(); });
+document.addEventListener("keydown", e => {
+  if (!running) return;
+  const k = (e.key || "").toLowerCase();
+  const mod = e.ctrlKey || e.metaKey;
+  if (mod && ["c","x","a","s","p","u"].indexOf(k) > -1){ e.preventDefault(); flagCopy("key"); }
+  if (mod && e.shiftKey && ["i","j","c"].indexOf(k) > -1) e.preventDefault();
+  if (k === "f12") e.preventDefault();
+});
 
 function jsonp(params){
   const base = (typeof VERIFY_ENDPOINT !== "undefined") ? VERIFY_ENDPOINT : ENDPOINT;
@@ -347,6 +377,7 @@ $("go").onclick = () => {
   $("quiz").classList.remove("hide");
   $("serial").innerHTML = "Paper no.<br>" + String(seed >>> 0).slice(0,8);
   running = true;
+  document.body.classList.add("locked");
   $("ticks").innerHTML = Q.map(()=>'<div class="tick"></div>').join("");
   show();
 };
@@ -408,13 +439,14 @@ function advance(){
 
 function finish(){
   running = false;
+  document.body.classList.remove("locked");
   clearInterval(tick);
   $("quiz").classList.add("hide");
   $("done").classList.remove("hide");
   window.scrollTo(0,0);
 
   const raw = answers.reduce((n,a,i)=> n + (a === Q[i].a ? 1 : 0), 0);
-  const penalty = switches * SWITCH_PENALTY;
+  const penalty = (switches + copyTries) * SWITCH_PENALTY;
   const finalScore = Math.max(0, raw - penalty);
   const band = bandFor(finalScore);
 
@@ -426,9 +458,12 @@ function finish(){
   $("stamp").style.color = band[3] === "var(--verd)" ? "var(--olive)" : band[3] === "var(--brass)" ? "var(--leather)" : "var(--red)";
   $("stamp").style.borderColor = $("stamp").style.color;
   $("stamp").style.boxShadow = "inset 0 0 0 1px " + $("stamp").style.color;
+  const why = [];
+  if (switches) why.push(`left the test ${switches} time${switches>1?"s":""}`);
+  if (copyTries) why.push(`${copyTries} blocked copy attempt${copyTries>1?"s":""}`);
   $("penaltyLine").textContent = penalty
-    ? `${raw} correct, minus ${penalty} for leaving the test ${switches} time${switches>1?"s":""}`
-    : `${raw} correct \u00B7 no tab switches recorded`;
+    ? `${raw} correct, minus ${penalty} for ` + why.join(" and ")
+    : `${raw} correct \u00B7 nothing flagged`;
 
   const secs = {};
   Q.forEach((q,i)=>{
@@ -480,7 +515,7 @@ async function save(raw, penalty, finalScore){
     try{
       await jsonp({action:"submit", email:email, token:token, seed:seed, ans:ansStr,
         times:record.times, raw:raw, penalty:penalty, score:finalScore,
-        total:Q.length, switches:switches, time:record.time});
+        total:Q.length, switches:switches, copies:copyTries, time:record.time});
       $("saveNote").textContent = "Result saved";
     }catch(e){ $("saveNote").textContent = "Not saved \u2014 screenshot this page"; }
     return;
