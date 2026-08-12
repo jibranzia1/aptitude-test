@@ -164,7 +164,7 @@
         <div class="foot"><span></span><button class="btn" id="sendCode">Send code</button></div>
       </div>
       <div id="stepCode" class="hide">
-        <p style="margin-top:0">Enter the six digits we just emailed you.</p>
+        <p style="margin-top:0" id="codeSent">Enter the six digits we just emailed you.</p>
         <div class="field">
           <label for="code">One-time code</label>
           <input id="code" class="code" type="text" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code">
@@ -280,23 +280,21 @@ function jsonp(params){
   });
 }
 
-$("sendCode").onclick = async () => {
+$("sendCode").onclick = () => {
   const v = $("mail").value.trim().toLowerCase();
   const err = $("mailErr");
   if (!v.endsWith("@" + ALLOWED_DOMAIN)){ err.textContent = `USE YOUR @${ALLOWED_DOMAIN.toUpperCase()} ADDRESS`; return; }
-  err.textContent = "SENDING... THIS CAN TAKE UP TO A MINUTE";
-  $("sendCode").disabled = true;
-  try{
-    const r = await jsonp({action:"send", email:v});
-    if (r && r.ok){
-      email = v;
-      $("stepEmail").classList.add("hide");
-      $("stepCode").classList.remove("hide");
-      $("code").focus();
-      err.textContent = "";
-    } else err.textContent = ((r && r.error) || "Could not send the code.").toUpperCase();
-  }catch(e){ err.textContent = "NO RESPONSE YET. CHECK YOUR INBOX \u2014 THE CODE MAY HAVE ARRIVED. IF NOT, TRY AGAIN."; }
-  $("sendCode").disabled = false;
+  email = v;
+  // The email is sent server-side whether or not the reply reaches us,
+  // so move straight to the code step instead of blocking on a slow round trip.
+  jsonp({action:"send", email:v})
+    .then(r => { if (r && !r.ok && r.error) $("codeErr").textContent = String(r.error).toUpperCase(); })
+    .catch(() => {});
+  $("stepEmail").classList.add("hide");
+  $("stepCode").classList.remove("hide");
+  $("codeSent").textContent = "Code sent to " + v + ". It can take up to a minute to arrive.";
+  $("code").focus();
+  err.textContent = "";
 };
 
 $("checkCode").onclick = async () => {
