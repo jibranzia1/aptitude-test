@@ -730,12 +730,25 @@ function handle(p) {
     const spentV = attemptSpent(email);
     if (spentV) return { ok: false, error: spentV };
     const sh = codesTab(), rows = sh.getDataRange().getValues();
+    const now = new Date();
+    /* First pass: an unused code that has not expired. */
     for (let i = rows.length - 1; i >= 1; i--) {
       if (String(rows[i][0]).toLowerCase() === email &&
           String(rows[i][1]) === String(p.code).trim() &&
           String(rows[i][4]) === 'no' &&
-          new Date(rows[i][3]) > new Date()) {
+          new Date(rows[i][3]) > now) {
         sh.getRange(i + 1, 5).setValue('yes');
+        return { ok: true, token: rows[i][2], name: email.split('@')[0] };
+      }
+    }
+    /* Second pass: the same code, already marked used, still inside its window.
+       That means the first verify succeeded but its reply was lost in transit
+       and the browser retried. Hand back the same token rather than punishing
+       someone for a network blip. */
+    for (let i = rows.length - 1; i >= 1; i--) {
+      if (String(rows[i][0]).toLowerCase() === email &&
+          String(rows[i][1]) === String(p.code).trim() &&
+          new Date(rows[i][3]) > now) {
         return { ok: true, token: rows[i][2], name: email.split('@')[0] };
       }
     }
