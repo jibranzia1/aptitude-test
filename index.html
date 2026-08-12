@@ -149,6 +149,51 @@
   .colophon{margin-top:40px;padding-top:18px;border-top:2px solid var(--ink);
     font-family:var(--data);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
     color:var(--steel);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+  /* ================= MOTION =================
+     One idea, carried through: you are moving down a road. The lane markings
+     run while the clock runs, questions arrive from ahead, and the verdict
+     lands like a stamp. Everything else stays still. */
+
+  @keyframes lanes    { from { background-position-x: 0 }    to { background-position-x: -44px } }
+  @keyframes riseIn   { from { opacity:0; transform:translateY(12px) } to { opacity:1; transform:none } }
+  @keyframes comeIn   { from { opacity:0; transform:translateX(22px) } to { opacity:1; transform:none } }
+  @keyframes drawRoad { from { transform:scaleX(0) } to { transform:scaleX(1) } }
+  @keyframes stampIn  { 0%{ opacity:0; transform:rotate(-18deg) scale(1.7) }
+                        55%{ opacity:1; transform:rotate(-1deg) scale(.93) }
+                        100%{ opacity:.92; transform:rotate(-4deg) scale(1) } }
+  @keyframes prizeIn  { from { opacity:0; transform:scale(.94) translateY(-8px) } to { opacity:1; transform:none } }
+  @keyframes redline  { 50% { background:#F7E4E1 } }
+
+  .mast .marque{ animation: riseIn .45s ease both }
+  .mast h1     { animation: riseIn .55s .07s ease both }
+  .mast .strap { animation: riseIn .5s .14s ease both }
+  .road        { transform-origin:left; animation: drawRoad .65s .18s cubic-bezier(.2,.8,.2,1) both }
+  .road::after { background-size:44px 2px }
+  .road.moving::after { animation: lanes 900ms linear infinite }
+  .road.moving.fast::after { animation-duration: 320ms }
+
+  #gate .card, #start .card, #done .card, #done .rev { animation: riseIn .5s .26s ease both }
+  #quiz .prog, #quiz .timer { animation: riseIn .4s ease both }
+
+  .card.enter .stem { animation: comeIn .34s ease both }
+  .card.enter .opt  { animation: comeIn .34s ease both }
+  .card.enter .opt:nth-child(1){ animation-delay:.05s }
+  .card.enter .opt:nth-child(2){ animation-delay:.10s }
+  .card.enter .opt:nth-child(3){ animation-delay:.15s }
+  .card.enter .opt:nth-child(4){ animation-delay:.20s }
+  .card.enter .qtop .big { animation: comeIn .3s ease both }
+
+  .tick { transition: background-color .25s ease, border-color .25s ease }
+  .opt  { transition: background-color .12s ease, color .12s ease, transform .08s ease }
+  .opt:active { transform: translateX(2px) }
+  .btn  { transition: background-color .14s ease, color .14s ease, transform .08s ease }
+  .btn:active:not(:disabled) { transform: translateY(1px) }
+  .low .track { animation: redline 1s steps(2,end) infinite }
+  .stamp.land { animation: stampIn .5s cubic-bezier(.2,.9,.25,1) both }
+  .prize:not(.hide) { animation: prizeIn .5s .1s cubic-bezier(.2,.9,.25,1) both }
+  .alarm:not(.hide) { animation: riseIn .3s ease both }
+
   .hide{display:none}
   body.locked #quiz, body.locked #quiz *{-webkit-user-select:none;-moz-user-select:none;user-select:none}
 
@@ -404,6 +449,7 @@ $("go").onclick = async () => {
   $("quiz").classList.remove("hide");
   $("serial").innerHTML = "Paper<br>" + session.slice(0,8).toUpperCase();
   document.body.classList.add("locked");
+  document.querySelector(".road").classList.add("moving");
   running = true;
   $("ticks").innerHTML = Q.map(()=>'<div class="tick"></div>').join("");
   show();
@@ -435,6 +481,10 @@ function show(){
   $("next").disabled = true;
   $("next").textContent = idx === Q.length-1 ? "Finish" : "Next";
   $("hint").textContent = "Pick one answer";
+  const panel = $("stem").parentElement;
+  panel.classList.remove("enter");
+  void panel.offsetWidth;
+  panel.classList.add("enter");
   startClock(q.t);
 }
 
@@ -442,12 +492,13 @@ function startClock(sec){
   clearInterval(tick);
   deadline = Date.now() + sec*1000;
   $("gauge").classList.remove("low");
+  document.querySelector(".road").classList.remove("fast");
   const render = () => {
     left = Math.max(0, Math.round((deadline - Date.now())/1000));
     const m = Math.floor(left/60), s = String(left%60).padStart(2,"0");
     $("clock").textContent = `${m}:${s}`;
     $("fluid").style.width = Math.max(0,(left/sec)*100) + "%";
-    if (left <= 15) $("gauge").classList.add("low");
+    if (left <= 15){ $("gauge").classList.add("low"); document.querySelector(".road").classList.add("fast"); }
   };
   render();
   tick = setInterval(()=>{ render(); if (left <= 0){ clearInterval(tick); advance(); } }, 250);
@@ -484,6 +535,7 @@ async function finish(){
   finished = true;
   running = false;
   document.body.classList.remove("locked");
+  document.querySelector(".road").classList.remove("moving","fast");
   clearInterval(tick);
   $("quiz").classList.add("hide");
   $("done").classList.remove("hide");
