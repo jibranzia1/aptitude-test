@@ -180,9 +180,9 @@
 
   <section id="gate" class="hide">
     <div class="card">
-      <div class="cardhead">Verify your identity</div>
+      <div class="cardhead">Who is riding</div>
       <div id="stepEmail">
-        <p style="margin-top:0">Use your company email address. A one-time code will be sent to it.</p>
+        <p style="margin-top:0">Your company email, so the result carries your name. A one-time code goes out to it.</p>
         <div class="field">
           <label for="mail">Company email</label>
           <input id="mail" type="email" placeholder="you@firstmfg.com" autocomplete="email">
@@ -208,23 +208,23 @@
 
   <section id="start" class="hide">
     <div class="card">
-      <div class="cardhead">Before you begin</div>
+      <div class="cardhead">Before you set off</div>
       <ul class="rules">
-        <li><b class="n">01</b><div>Your paper is generated fresh. Nobody else gets the same 20 questions, and neither will you if you sit it again.</div></li>
+        <li><b class="n">01</b><div>Every paper is built fresh. Nobody else gets your 20 questions, and neither will you if you ride it again.</div></li>
         <li><b class="n">02</b><div>Every question carries its own clock. When it runs out, the test moves on without you.</div></li>
         <li><b class="n">03</b><div>There is no going back. Answer, then continue.</div></li>
         <li><b class="n">04</b><div><b style="color:var(--red)">Leaving this tab costs you a point each time.</b> The clock keeps running while you are away.</div></li>
         <li><b class="n">05</b><div><b style="color:var(--red)">Selecting, copying and right-clicking are disabled.</b> Each attempt costs a point, the same as leaving the tab.</div></li>
-        <li><b class="n">06</b><div>No calculator, no phone. Pen and paper for rough work is fine.</div></li>
-        <li><b class="n">07</b><div>Your score and every worked solution appear the moment you finish.</div></li>
-        <li><b class="n">08</b><div><b style="color:var(--red)">Get all 20 right with nothing flagged and you win Rs 5,000.</b></div></li>
+        <li><b class="n">06</b><div>No calculator, no phone. Pen and paper for working out is fine.</div></li>
+        <li><b class="n">07</b><div>Your score and the working behind every answer land the moment you finish.</div></li>
+        <li><b class="n">08</b><div><b style="color:var(--red)">A clean sweep, all 20 with nothing flagged, wins Rs 5,000.</b></div></li>
       </ul>
       <div class="field" id="nameField">
         <label for="who">Your name</label>
         <input id="who" type="text" placeholder="Type your full name" autocomplete="off">
       </div>
       <div class="foot"><span class="label" id="privacyNote">Recorded for the assessment</span>
-        <button class="btn" id="go">Begin test</button></div>
+        <button class="btn" id="go">Start the run</button></div>
     </div>
   </section>
 
@@ -233,7 +233,7 @@
     <div class="timer" id="gauge">
       <div class="num" id="clock">0:00</div>
       <div style="flex:1">
-        <div class="cap">Time remaining on this question</div>
+        <div class="cap">Time left on this one</div>
         <div class="track" style="margin-top:6px"><div class="fill" id="fluid" style="width:100%"></div></div>
       </div>
     </div>
@@ -256,7 +256,7 @@
     <div class="card">
       <div class="cardhead" id="whoDone">Result</div>
       <div class="prize hide" id="prize">
-        <div class="top">Perfect paper</div>
+        <div class="top">Clean sweep</div>
         <div class="big" id="prizeBig"></div>
         <div class="sub" id="prizeSub"></div>
       </div>
@@ -271,7 +271,7 @@
       </table>
       <div class="foot">
         <span class="label" id="saveNote"></span>
-        <button class="btn ghost" id="again">Fresh paper</button>
+        <button class="btn ghost" id="again">Ride it again</button>
       </div>
     </div>
     <div class="label" style="margin:30px 0 14px">Every question, with working</div>
@@ -487,7 +487,7 @@ async function finish(){
   window.scrollTo(0,0);
   $("whoDone").textContent = email + " \u00B7 Result";
   $("pts").textContent = "\u00B7\u00B7";
-  $("penaltyLine").textContent = "Marking your paper...";
+  $("penaltyLine").textContent = "Marking your run...";
 
   const ansStr = answers.slice(0, Q.length).map(a => (a === null || a === undefined) ? "-" : String(a)).join("");
   let r = null;
