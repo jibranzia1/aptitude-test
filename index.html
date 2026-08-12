@@ -1,0 +1,548 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aptitude &amp; Reasoning Test</title>
+<style>
+  :root{
+    --ink:#10151C;
+    --slate:#1B2430;
+    --steel:#2C3847;
+    --paper:#ECEAE4;
+    --mute:#8A94A3;
+    --brass:#C08A2E;
+    --signal:#C4553B;
+    --verd:#4E8C7D;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:var(--sans);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    padding:24px 16px 64px;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--brass);
+  }
+  .rule{height:1px;background:var(--steel);border:0;margin:20px 0}
+  .muted{color:var(--mute)}
+  h1{
+    font-family:var(--mono);
+    font-size:clamp(22px,4.4vw,32px);
+    letter-spacing:-.01em;
+    margin:6px 0 4px;
+    font-weight:600;
+  }
+  .panel{
+    background:var(--slate);
+    border:1px solid var(--steel);
+    border-radius:2px;
+    padding:24px;
+  }
+  button{font-family:inherit}
+  .btn{
+    background:var(--brass);
+    color:var(--ink);
+    border:0;
+    border-radius:2px;
+    padding:13px 26px;
+    font-family:var(--mono);
+    font-size:13px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:filter .15s ease;
+  }
+  .btn:hover:not(:disabled){filter:brightness(1.12)}
+  .btn:disabled{background:var(--steel);color:var(--mute);cursor:not-allowed}
+  .btn.ghost{
+    background:transparent;
+    color:var(--mute);
+    border:1px solid var(--steel);
+  }
+  .btn.ghost:hover{color:var(--paper);border-color:var(--mute);filter:none}
+  :focus-visible{outline:2px solid var(--brass);outline-offset:3px}
+  .rules{list-style:none;padding:0;margin:0}
+  .rules li{
+    display:flex;gap:14px;
+    padding:11px 0;
+    border-bottom:1px solid var(--steel);
+    font-size:14.5px;
+  }
+  .rules li:last-child{border-bottom:0}
+  .rules span{
+    font-family:var(--mono);font-size:11px;color:var(--brass);
+    padding-top:3px;min-width:20px;
+  }
+  .field{margin:22px 0 20px}
+  label{
+    display:block;font-family:var(--mono);font-size:11px;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--mute);
+    margin-bottom:8px;
+  }
+  input[type=text]{
+    width:100%;background:var(--ink);border:1px solid var(--steel);
+    color:var(--paper);padding:13px 14px;font-size:16px;
+    font-family:var(--sans);border-radius:2px;
+  }
+  input[type=text]:focus{border-color:var(--brass);outline:none}
+  .ticks{display:flex;gap:3px;margin-bottom:22px}
+  .tick{flex:1;height:3px;background:var(--steel);border-radius:1px}
+  .tick.done{background:var(--mute)}
+  .tick.now{background:var(--brass)}
+  .qgrid{display:grid;grid-template-columns:78px 1fr;gap:26px;align-items:start}
+  .gauge{position:relative}
+  .gauge .clock{
+    font-family:var(--mono);font-size:27px;font-variant-numeric:tabular-nums;
+    letter-spacing:-.02em;line-height:1;
+  }
+  .gauge .unit{font-family:var(--mono);font-size:10px;color:var(--mute);letter-spacing:.16em;margin-top:5px}
+  .tube{
+    margin-top:14px;height:190px;width:8px;
+    background:var(--ink);border:1px solid var(--steel);border-radius:1px;
+    position:relative;overflow:hidden;
+  }
+  .fluid{
+    position:absolute;left:0;right:0;bottom:0;
+    background:var(--brass);
+    transition:height .25s linear, background-color .3s ease;
+  }
+  .low .clock{color:var(--signal)}
+  .low .fluid{background:var(--signal)}
+  .low .tube{animation:pulse 1s ease-in-out infinite}
+  @keyframes pulse{50%{border-color:var(--signal)}}
+  .qnum{font-family:var(--mono);font-size:11px;color:var(--mute);letter-spacing:.14em;margin-bottom:14px}
+  .stem{
+    font-family:var(--serif);
+    font-size:clamp(17px,2.6vw,20px);
+    line-height:1.45;
+    margin:8px 0 22px;
+  }
+  .stem .seq{font-family:var(--mono);letter-spacing:.04em}
+  .opts{display:flex;flex-direction:column;gap:9px}
+  .opt{
+    display:flex;gap:14px;align-items:flex-start;
+    background:var(--ink);border:1px solid var(--steel);
+    color:var(--paper);border-radius:2px;
+    padding:14px 16px;text-align:left;font-size:15px;
+    cursor:pointer;width:100%;
+    transition:border-color .12s ease, background-color .12s ease;
+  }
+  .opt:hover{border-color:var(--mute)}
+  .opt .ltr{font-family:var(--mono);font-size:12px;color:var(--brass);padding-top:2px}
+  .opt.sel{border-color:var(--brass);background:#1F2A38}
+  .foot{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:14px}
+  .score{display:flex;align-items:baseline;gap:12px;margin:4px 0 2px}
+  .score b{font-family:var(--mono);font-size:64px;font-weight:600;line-height:1;letter-spacing:-.03em}
+  .score i{font-family:var(--mono);font-style:normal;font-size:19px;color:var(--mute)}
+  .band{font-family:var(--mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-top:6px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--mute);text-align:left;font-weight:400;
+    padding:9px 8px;border-bottom:1px solid var(--steel);
+  }
+  td{padding:10px 8px;border-bottom:1px solid var(--steel)}
+  .rev{border-left:2px solid var(--steel);padding:12px 0 12px 16px;margin-bottom:14px}
+  .rev.ok{border-left-color:var(--verd)}
+  .rev.no{border-left-color:var(--signal)}
+  .rev h4{margin:0 0 7px;font-size:14.5px;font-weight:600;font-family:var(--serif)}
+  .rev p{margin:4px 0;font-size:13.5px}
+  .tag{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+  .tag.ok{color:var(--verd)}
+  .tag.no{color:var(--signal)}
+  .why{color:var(--mute);font-size:13px}
+  .hide{display:none}
+  @media (max-width:560px){
+    .qgrid{grid-template-columns:1fr;gap:16px}
+    .tube{display:none}
+    .gauge{display:flex;align-items:baseline;gap:10px}
+    .gauge .unit{margin:0}
+    .panel{padding:18px}
+    .foot{flex-direction:column-reverse;align-items:stretch}
+    .foot .btn{width:100%}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
+</style>
+
+<div class="wrap">
+
+  <section id="start">
+    <div class="eyebrow">Internal Assessment</div>
+    <h1>Aptitude &amp; Reasoning Test</h1>
+    <p class="muted" style="margin-top:0">20 questions &middot; one at a time &middot; each with its own countdown</p>
+    <hr class="rule">
+    <div class="panel">
+      <ul class="rules">
+        <li><span>01</span><div>Each question has its own time limit, shown on the left. When it runs out the test moves on by itself.</div></li>
+        <li><span>02</span><div>You cannot go back. Answer, then continue.</div></li>
+        <li><span>03</span><div>An unanswered question scores zero. A wrong answer costs nothing extra, so commit to your best option before time runs out.</div></li>
+        <li><span>04</span><div>No calculator, no phone. Pen and paper for rough work is fine.</div></li>
+        <li><span>05</span><div>Your score and full solutions appear the moment you finish.</div></li>
+      </ul>
+      <div class="field">
+        <label for="who">Your name</label>
+        <input id="who" type="text" placeholder="Type your full name" autocomplete="off">
+      </div>
+      <div class="foot" style="margin-top:0">
+        <button class="btn ghost" id="viewResults">See all results</button>
+        <button class="btn" id="go">Begin test</button>
+      </div>
+      <p class="muted" style="font-size:12.5px;margin:16px 0 0">Your name, score and answers are recorded for the assessment.</p>
+    </div>
+  </section>
+
+  <section id="quiz" class="hide">
+    <div class="ticks" id="ticks"></div>
+    <div class="panel">
+      <div class="qgrid">
+        <div class="gauge" id="gauge">
+          <div class="clock" id="clock">0:00</div>
+          <div class="unit">Left</div>
+          <div class="tube"><div class="fluid" id="fluid" style="height:100%"></div></div>
+        </div>
+        <div>
+          <div class="qnum" id="qnum"></div>
+          <div class="eyebrow" id="sect"></div>
+          <div class="stem" id="stem"></div>
+          <div class="opts" id="opts"></div>
+          <div class="foot">
+            <div class="muted" style="font-size:12.5px" id="hint">Pick one answer.</div>
+            <button class="btn" id="next" disabled>Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="done" class="hide">
+    <div class="eyebrow" id="whoDone"></div>
+    <h1>Result</h1>
+    <div class="panel">
+      <div class="score"><b id="pts">0</b><i>/ 20 correct</i></div>
+      <div class="band" id="band"></div>
+      <hr class="rule">
+      <table>
+        <thead><tr><th>Section</th><th style="text-align:right">Score</th><th style="text-align:right">Time used</th></tr></thead>
+        <tbody id="secTable"></tbody>
+      </table>
+      <div class="foot">
+        <button class="btn ghost" id="again">Take it again</button>
+        <button class="btn ghost" id="toResults">See all results</button>
+      </div>
+    </div>
+    <hr class="rule">
+    <div class="eyebrow">Every question, with working</div>
+    <div id="review" style="margin-top:18px"></div>
+  </section>
+
+  <section id="board" class="hide">
+    <div class="eyebrow">Team</div>
+    <h1>All results</h1>
+    <div class="panel">
+      <div id="boardBody"><p class="muted">Loading...</p></div>
+      <div class="foot"><span></span><button class="btn ghost" id="backHome">Back to start</button></div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+const Q = [
+ {s:"Numerical & pattern", t:100, q:'What comes next? &nbsp;<span class="seq">2, 12, 36, 80, 150, ___</span>',
+  o:["196","224","252","270"], a:2,
+  w:"Each term is n cubed plus n squared. 1+1=2, 8+4=12, 27+9=36, 64+16=80, 125+25=150, then 216+36 = 252."},
+
+ {s:"Numerical & pattern", t:120, q:'What comes next? &nbsp;<span class="seq">1, 11, 21, 1211, 111221, ___</span>',
+  o:["122111","312211","111222","212211"], a:1,
+  w:"Look-and-say. Each term reads the one before it aloud. 111221 is three 1s, two 2s, one 1, which gives 312211."},
+
+ {s:"Numerical & pattern", t:90, q:'Which letter continues the series? &nbsp;<span class="seq">A, C, F, J, O, ___</span>',
+  o:["S","T","U","V"], a:2,
+  w:"Gaps grow by one: +2, +3, +4, +5, +6. Alphabet positions 1, 3, 6, 10, 15, 21. Position 21 is U."},
+
+ {s:"Numerical & pattern", t:90, q:"Sales fell by 40% in Year 1. By what percentage must they rise in Year 2 to get back to the original level?",
+  o:["40%","50%","60%","About 67%"], a:3,
+  w:"100 drops to 60. Going from 60 back to 100 is a gain of 40 on a base of 60, which is 66.7%."},
+
+ {s:"Numerical & pattern", t:100, q:"If 4 machines produce 12 units in 6 minutes, how long will 8 machines take to produce 36 units?",
+  o:["6 minutes","9 minutes","12 minutes","18 minutes"], a:1,
+  w:"One machine makes 0.5 units per minute. Eight machines make 4 per minute. 36 divided by 4 is 9 minutes."},
+
+ {s:"Logical deduction", t:100, q:"In a group of 100 people, 70 drink tea and 80 drink coffee. Everyone drinks at least one. What is the smallest possible number who drink both?",
+  o:["30","50","70","It cannot be determined"], a:1,
+  w:"70 + 80 = 150 preferences spread over 100 people, so at least 50 people must have been counted twice."},
+
+ {s:"Logical deduction", t:120, q:"You meet two people, X and Y. Each one either always tells the truth or always lies. X says: At least one of us is a liar. What must be true?",
+  o:["Both are liars","X tells the truth and Y lies","X lies and Y tells the truth","Both tell the truth"], a:1,
+  w:"If X were a liar, his statement would be true, and liars cannot say true things. So X is truthful, his statement holds, and the liar must be Y."},
+
+ {s:"Logical deduction", t:130, q:'Four cards lie on a table showing <span class="seq">A, K, 4, 7</span>. Every card has a letter on one side and a number on the other. The rule: if a card has a vowel on one side, it has an even number on the other. Which cards must you turn over to test it?',
+  o:["A and 4","A and 7","A, K and 4","4 and 7"], a:1,
+  w:"Turn A, because a vowel must have an even number. Turn 7, because if a vowel is hiding behind an odd number the rule breaks. Turning 4 proves nothing, since the rule never says an even number must have a vowel."},
+
+ {s:"Logical deduction", t:100, q:"All Bloops are Razzies. All Razzies are Lazzies. Some Lazzies are quick. Which statement must be true?",
+  o:["Some Bloops are quick","All Lazzies are Bloops","All Bloops are Lazzies","No Razzies are quick"], a:2,
+  w:"Bloops to Razzies to Lazzies holds by transitivity. Nothing connects quick back down to Bloops."},
+
+ {s:"Logical deduction", t:100, q:"Zia is 7th from the front of a queue and 13th from the back. Two people ahead of him leave, and three new people join at the back. How many are in the queue now?",
+  o:["18","19","20","21"], a:2,
+  w:"The original queue is 7 + 13 - 1 = 19, since Zia is counted twice. Take away 2 and add 3 to get 20."},
+
+ {s:"Logical deduction", t:110, q:"Someone claims: Every employee who missed the deadline was on the night shift. Which single piece of evidence would disprove it?",
+  o:["A night-shift employee who met the deadline","A day-shift employee who met the deadline","A day-shift employee who missed the deadline","A night-shift employee who missed the deadline"], a:2,
+  w:"The claim rules out exactly one combination: missed the deadline and not on nights. Only C is that case. The others are all consistent with the claim."},
+
+ {s:"Probability & quantitative", t:110, q:"A bag holds 3 red and 5 blue marbles. Two are drawn without replacement. What is the probability that both are the same colour?",
+  o:["3/14","13/28","1/2","15/28"], a:1,
+  w:"Same colour = (3C2 + 5C2) divided by 8C2 = (3 + 10) / 28 = 13/28."},
+
+ {s:"Probability & quantitative", t:90, q:"On a game show you pick one of three doors. A car is behind one, goats behind the other two. The host, who knows where the car is, opens a different door to reveal a goat, then offers you the swap. What should you do?",
+  o:["Stay, it is now 50/50","Switch, it lifts your chance to 2/3","It makes no difference","Stay, switching drops you to 1/3"], a:1,
+  w:"Your first pick is right 1 time in 3. The other 2 in 3 sat behind the two doors you did not pick, and the host's reveal concentrates all of it onto the one door still closed."},
+
+ {s:"Probability & quantitative", t:120, q:"A 4x4x4 cube is painted on all six outer faces, then cut into 64 unit cubes. How many unit cubes have exactly two painted faces?",
+  o:["8","16","24","32"], a:2,
+  w:"Exactly two painted faces means edge cubes, excluding the corners: 12 edges times (4 - 2) = 24."},
+
+ {s:"Probability & quantitative", t:110, q:"What is the angle between the hour and minute hands at exactly 3:40?",
+  o:["120 degrees","125 degrees","130 degrees","140 degrees"], a:2,
+  w:"Hour hand: (3 x 30) + (40 x 0.5) = 110 degrees. Minute hand: 40 x 6 = 240 degrees. The difference is 130 degrees."},
+
+ {s:"Lateral & verbal", t:130, q:"Two ropes each burn for exactly 60 minutes, but unevenly along their length. With only these ropes and a lighter, how do you measure exactly 45 minutes?",
+  o:["Cut one rope in half and burn both halves",
+     "Light rope 1 at both ends and rope 2 at one end; when rope 1 finishes, light rope 2's other end",
+     "Light both ropes at one end at the same time",
+     "It cannot be done with two ropes"], a:1,
+  w:"Rope 1 lit at both ends is gone in 30 minutes. At that moment rope 2 has 30 minutes of burn left; lighting its second end halves that to 15. 30 + 15 = 45."},
+
+ {s:"Lateral & verbal", t:80, q:'Which is the odd one out? &nbsp;<span class="seq">8, 27, 64, 100, 125, 216</span>',
+  o:["8","64","100","216"], a:2,
+  w:"All are perfect cubes (2, 3, 4, 5 and 6 cubed) except 100, which is a perfect square. Note 64 is both, so it is not the odd one."},
+
+ {s:"Lateral & verbal", t:80, q:"EPHEMERAL is to PERMANENCE as OPAQUE is to:",
+  o:["Density","Transparency","Darkness","Thickness"], a:1,
+  w:"The pairing is a quality and the thing it lacks. Ephemeral lacks permanence; opaque lacks transparency."},
+
+ {s:"Lateral & verbal", t:80, q:"A patch of lily pads doubles in size every day. It covers the whole lake on day 48. On which day did it cover half the lake?",
+  o:["Day 24","Day 36","Day 46","Day 47"], a:3,
+  w:"Run the doubling backwards one step: the day before full cover, it was half."},
+
+ {s:"Lateral & verbal", t:90, q:"A jacket and a belt cost 132 dollars together. The jacket costs 100 dollars more than the belt. What does the belt cost?",
+  o:["16 dollars","26 dollars","32 dollars","36 dollars"], a:0,
+  w:"Belt = x, jacket = x + 100, so 2x + 100 = 132 and x = 16. The instinctive answer of 32 gives a total of 164, not 132."}
+];
+
+const BANDS = [
+  [17,"Exceptional - strong abstract reasoning under pressure","var(--verd)"],
+  [13,"Strong - well above average problem solving","var(--verd)"],
+  [9, "Average for a professional cohort","var(--brass)"],
+  [5, "Below the bar for analytical roles","var(--signal)"],
+  [0, "Weak - reconsider fit for independent reasoning work","var(--signal)"]
+];
+
+const $ = id => document.getElementById(id);
+let idx = 0, picked = null, answers = [], spent = [], left = 0, tick = null, name = "";
+
+$("go").onclick = () => {
+  name = $("who").value.trim() || "Unnamed";
+  idx = 0; answers = []; spent = [];
+  $("start").classList.add("hide");
+  $("done").classList.add("hide");
+  $("board").classList.add("hide");
+  $("quiz").classList.remove("hide");
+  buildTicks();
+  show();
+};
+$("who").addEventListener("keydown", e => { if (e.key === "Enter") $("go").click(); });
+
+function buildTicks(){
+  $("ticks").innerHTML = Q.map((_,i)=>`<div class="tick" data-i="${i}"></div>`).join("");
+}
+function paintTicks(){
+  document.querySelectorAll(".tick").forEach((el,i)=>{
+    el.className = "tick" + (i < idx ? " done" : i === idx ? " now" : "");
+  });
+}
+
+function show(){
+  const q = Q[idx];
+  picked = null;
+  paintTicks();
+  $("qnum").textContent = `Question ${idx+1} of ${Q.length}`;
+  $("sect").textContent = q.s;
+  $("stem").innerHTML = q.q;
+  $("opts").innerHTML = q.o.map((o,i)=>
+    `<button class="opt" data-i="${i}"><span class="ltr">${"ABCD"[i]}</span><span>${o}</span></button>`).join("");
+  $("opts").querySelectorAll(".opt").forEach(b => b.onclick = () => {
+    picked = +b.dataset.i;
+    $("opts").querySelectorAll(".opt").forEach(x => x.classList.remove("sel"));
+    b.classList.add("sel");
+    $("next").disabled = false;
+    $("hint").textContent = idx === Q.length-1 ? "Finishing locks your answers." : "You cannot come back to this one.";
+  });
+  $("next").disabled = true;
+  $("next").textContent = idx === Q.length-1 ? "Finish" : "Next";
+  $("hint").textContent = "Pick one answer.";
+  startClock(q.t);
+}
+
+function startClock(sec){
+  clearInterval(tick);
+  const total = sec; left = sec;
+  $("gauge").classList.remove("low");
+  render();
+  tick = setInterval(()=>{
+    left--; render();
+    if (left <= 15) $("gauge").classList.add("low");
+    if (left <= 0){ clearInterval(tick); advance(true); }
+  }, 1000);
+  function render(){
+    const m = Math.floor(left/60), s = String(Math.max(left,0)%60).padStart(2,"0");
+    $("clock").textContent = `${m}:${s}`;
+    $("fluid").style.height = Math.max(0,(left/total)*100) + "%";
+  }
+}
+
+$("next").onclick = () => advance(false);
+
+function advance(timedOut){
+  clearInterval(tick);
+  answers.push(picked);
+  spent.push(Q[idx].t - Math.max(left,0));
+  idx++;
+  if (idx < Q.length) show(); else finish();
+}
+
+function finish(){
+  $("quiz").classList.add("hide");
+  $("done").classList.remove("hide");
+  window.scrollTo(0,0);
+
+  const score = answers.reduce((n,a,i)=> n + (a === Q[i].a ? 1 : 0), 0);
+  $("pts").textContent = score;
+  $("whoDone").textContent = name;
+  const band = BANDS.find(b => score >= b[0]);
+  $("band").textContent = band[1];
+  $("band").style.color = band[2];
+
+  const secs = {};
+  Q.forEach((q,i)=>{
+    secs[q.s] = secs[q.s] || {n:0,c:0,t:0};
+    secs[q.s].n++;
+    secs[q.s].t += spent[i];
+    if (answers[i] === q.a) secs[q.s].c++;
+  });
+  $("secTable").innerHTML = Object.entries(secs).map(([k,v])=>
+    `<tr><td>${k}</td><td style="text-align:right">${v.c} / ${v.n}</td>
+     <td style="text-align:right">${fmt(v.t)}</td></tr>`).join("")
+    + `<tr><td><b>Total</b></td><td style="text-align:right"><b>${score} / ${Q.length}</b></td>
+       <td style="text-align:right"><b>${fmt(spent.reduce((a,b)=>a+b,0))}</b></td></tr>`;
+
+  $("review").innerHTML = Q.map((q,i)=>{
+    const a = answers[i], ok = a === q.a;
+    const given = a === null ? "No answer, ran out of time" : `${"ABCD"[a]}) ${q.o[a]}`;
+    return `<div class="rev ${ok?"ok":"no"}">
+      <span class="tag ${ok?"ok":"no"}">${ok?"Correct":"Missed"} &middot; Q${i+1} &middot; ${fmt(spent[i])}</span>
+      <h4>${q.q}</h4>
+      <p>Your answer: ${given}</p>
+      ${ok?"":`<p>Correct: ${"ABCD"[q.a]}) ${q.o[q.a]}</p>`}
+      <p class="why">${q.w}</p>
+    </div>`;
+  }).join("");
+
+  save(score);
+}
+const fmt = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+
+$("again").onclick = () => { $("done").classList.add("hide"); $("start").classList.remove("hide"); window.scrollTo(0,0); };
+
+/* Paste your Google Apps Script web-app URL below to collect every result
+   in one spreadsheet. Leave it empty and results stay on each person's own
+   device only. Setup steps are in the README. */
+const RESULTS_ENDPOINT = "";
+
+const hasHost = typeof window.storage !== "undefined";
+
+async function save(score){
+  const record = {
+    name, score, total: Q.length,
+    time: spent.reduce((a,b)=>a+b,0),
+    when: new Date().toISOString(),
+    answers
+  };
+  if (RESULTS_ENDPOINT){
+    try{
+      await fetch(RESULTS_ENDPOINT, {
+        method:"POST", mode:"no-cors",
+        headers:{"Content-Type":"text/plain;charset=utf-8"},
+        body: JSON.stringify(record)
+      });
+    }catch(e){}
+  }
+  try{
+    if (hasHost){
+      const key = "results:" + Date.now() + "-" + Math.random().toString(36).slice(2,7);
+      await window.storage.set(key, JSON.stringify(record), true);
+    } else {
+      const all = JSON.parse(localStorage.getItem("apt_results") || "[]");
+      all.push(record);
+      localStorage.setItem("apt_results", JSON.stringify(all));
+    }
+  }catch(e){}
+}
+
+async function readAll(){
+  if (hasHost){
+    const list = await window.storage.list("results:", true);
+    const keys = (list && list.keys) || [];
+    const rows = [];
+    for (const k of keys){
+      try{ const r = await window.storage.get(k, true); rows.push(JSON.parse(r.value)); }catch(e){}
+    }
+    return rows;
+  }
+  return JSON.parse(localStorage.getItem("apt_results") || "[]");
+}
+
+async function board(){
+  $("start").classList.add("hide"); $("done").classList.add("hide");
+  $("board").classList.remove("hide"); window.scrollTo(0,0);
+  const body = $("boardBody");
+  body.innerHTML = '<p class="muted">Loading...</p>';
+  try{
+    const rows = await readAll();
+    if (!rows.length){
+      body.innerHTML = '<p class="muted">No completed tests yet. Results appear here as people finish.</p>';
+      return;
+    }
+    rows.sort((a,b)=> b.score - a.score || a.time - b.time);
+    body.innerHTML = `<table><thead><tr><th>Name</th><th style="text-align:right">Score</th>
+      <th style="text-align:right">Time</th><th style="text-align:right">Taken</th></tr></thead><tbody>` +
+      rows.map(r=>`<tr><td>${esc(r.name)}</td>
+        <td style="text-align:right">${r.score} / ${r.total}</td>
+        <td style="text-align:right">${fmt(r.time)}</td>
+        <td style="text-align:right">${new Date(r.when).toLocaleDateString()}</td></tr>`).join("") +
+      `</tbody></table>` +
+      (hasHost ? "" : '<p class="muted" style="font-size:12.5px;margin-top:14px">This list covers tests taken on this device and browser only.</p>');
+  }catch(e){
+    body.innerHTML = '<p class="muted">Results could not be loaded. Each person still sees their own score at the end of the test.</p>';
+  }
+}
+const esc = s => String(s).replace(/[<>&]/g, c => ({"<":"&lt;",">":"&gt;","&":"&amp;"}[c]));
+
+$("viewResults").onclick = board;
+$("toResults").onclick = board;
+$("backHome").onclick = () => { $("board").classList.add("hide"); $("start").classList.remove("hide"); window.scrollTo(0,0); };
+</script>
