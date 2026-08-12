@@ -555,7 +555,11 @@ function buildPaper(){
   const picked = { Easy: [], Medium: [], Hard: [] };
   const famUsed = {};
   /* seconds allowed per question, by difficulty */
-  const CLOCK = { Easy: 30, Medium: 45, Hard: 60 };
+  /* Tightened to squeeze the window a screenshot round trip needs (roughly
+     15 to 25 seconds) without going below what an honest solver requires.
+     Every remaining question was picked because it can be reasoned out well
+     inside these limits. */
+  const CLOCK = { Easy: 25, Medium: 40, Hard: 50 };
   const tiers = [["Hard", HARDGEN2, HARDFAM2, 6],
                  ["Medium", MEDGEN2, MEDFAM2, 8],
                  ["Easy", EASYGEN2, EASYFAM2, 6]];
@@ -724,7 +728,7 @@ function integritySignals(review, switches, copies) {
   const timedOut = review.filter(function (q) { return q.given === null; }).length;
 
   /* hard questions answered correctly in the window a lookup takes */
-  const lookupBand = hard.filter(function (q) { return q.ok && q.spent >= 15 && q.spent <= 32; }).length;
+  const lookupBand = hard.filter(function (q) { return q.ok && q.spent >= 14 && q.spent <= 30; }).length;
 
   const flags = [];
   if (hardPct >= 0.75 && hardPct > easyPct + 0.15) {
@@ -737,7 +741,7 @@ function integritySignals(review, switches, copies) {
     flags.push('Spent almost the same time on every question regardless of difficulty');
   }
   if (lookupBand >= 3) {
-    flags.push(lookupBand + ' hard questions answered correctly in the 15 to 32 second band');
+    flags.push(lookupBand + ' hard questions answered correctly in the 14 to 30 second band');
   }
   if (copies > 0) {
     flags.push(copies + ' blocked attempt' + (copies > 1 ? 's' : '') + ' to copy the questions');
