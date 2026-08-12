@@ -436,7 +436,7 @@ function advance(){
      both fire inside the same tick. Recording twice would shift every later
      answer by one slot, which shows up as answered questions being reported
      as timeouts. One record per question, no matter how often this is called. */
-  if (answers.length !== idx) return;
+  if (idx >= Q.length || answers.length !== idx) return;
   clearInterval(tick);
   $("next").disabled = true;
   answers.push(picked);
