@@ -373,7 +373,7 @@ $("go").onclick = async () => {
     Q = r.qs; session = r.session;
   }catch(e){ note.textContent = "FAILED: " + (e && e.message ? e.message : e); $("go").disabled = false; return; }
 
-  idx = 0; answers = []; spent = []; switches = 0; copyTries = 0; finished = false;
+  idx = 0; answers = []; spent = []; switches = 0; copyTries = 0; finished = false; lastAdvance = 0;
   $("alarm").classList.add("hide");
   $("start").classList.add("hide");
   $("done").classList.add("hide");
@@ -431,12 +431,17 @@ function startClock(sec){
 
 $("next").onclick = () => advance();
 
+let lastAdvance = 0;
 function advance(){
-  /* Guard against a double advance: the Next click and the expiring timer can
-     both fire inside the same tick. Recording twice would shift every later
-     answer by one slot, which shows up as answered questions being reported
-     as timeouts. One record per question, no matter how often this is called. */
-  if (idx >= Q.length || answers.length !== idx) return;
+  /* The Next click and the expiring timer can both fire within the same tick.
+     Acting on both would record two answers for one question and shift every
+     later answer by a slot, which surfaces as answered questions being
+     reported as timeouts. A real advance is always seconds apart, so anything
+     arriving within half a second of the last one is a duplicate. */
+  if (idx >= Q.length) return;
+  const now = Date.now();
+  if (now - lastAdvance < 500) return;
+  lastAdvance = now;
   clearInterval(tick);
   $("next").disabled = true;
   answers.push(picked);
