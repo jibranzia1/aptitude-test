@@ -249,59 +249,19 @@
 
 </div>
 
-<script src="engine.js"></script>
 <script>
 const VERIFY_ENDPOINT = "https://script.google.com/macros/s/AKfycbw3CERsTbFcVYDY3tD6wmhE6hT7t2nJJf02oWQULVjtMpMsV6nTlim33-9HoxTlRhgZ/exec";
 const ALLOWED_DOMAIN  = "firstmfg.com";
-const SWITCH_PENALTY  = 1;
 
 const $ = id => document.getElementById(id);
-let Q = [], seed = 0, idx = 0, picked = null, answers = [], spent = [];
+let Q = [], session = "", idx = 0, picked = null, answers = [], spent = [];
 let left = 0, tick = null, deadline = 0, running = false;
-let name = "", email = "", token = "", switches = 0, awayLock = false;
+let name = "", email = "", token = "", switches = 0, copyTries = 0, awayLock = false, copyLock = false;
 
-function flagAway(){
-  if (!running || awayLock) return;
-  awayLock = true; setTimeout(()=>{ awayLock = false; }, 1500);
-  switches++;
-  banner();
-}
-document.addEventListener("visibilitychange", ()=>{ if (document.hidden) flagAway(); });
-window.addEventListener("blur", flagAway);
-
-/* ---- copy / selection deterrents ---- */
-let copyTries = 0, copyLock = false;
-function flagCopy(what){
-  if (!running || copyLock) return;
-  copyLock = true; setTimeout(()=>{ copyLock = false; }, 800);
-  copyTries++;
-  banner();
-}
-function banner(){
-  const al = $("alarm");
-  const bits = [];
-  if (switches) bits.push(`LEFT THE TEST ${switches}\u00D7`);
-  if (copyTries) bits.push(`COPY BLOCKED ${copyTries}\u00D7`);
-  if (!bits.length) return;
-  al.classList.remove("hide");
-  al.textContent = bits.join("  \u00B7  ") + `  \u00B7  PENALTY \u2212${(switches + copyTries) * SWITCH_PENALTY}`;
-}
-["copy","cut","selectstart","dragstart"].forEach(ev =>
-  document.addEventListener(ev, e => { if (running){ e.preventDefault(); flagCopy(ev); } }));
-document.addEventListener("contextmenu", e => { if (running) e.preventDefault(); });
-document.addEventListener("keydown", e => {
-  if (!running) return;
-  const k = (e.key || "").toLowerCase();
-  const mod = e.ctrlKey || e.metaKey;
-  if (mod && ["c","x","a","s","p","u"].indexOf(k) > -1){ e.preventDefault(); flagCopy("key"); }
-  if (mod && e.shiftKey && ["i","j","c"].indexOf(k) > -1) e.preventDefault();
-  if (k === "f12") e.preventDefault();
-});
-
-function jsonp(params){
-  const base = (typeof VERIFY_ENDPOINT !== "undefined") ? VERIFY_ENDPOINT : ENDPOINT;
+/* ---------- transport ---------- */
+function call(params){
   const qs = Object.keys(params).map(k => encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join("&");
-  return fetch(base + "?callback=cb&_=" + Date.now() + "&" + qs,
+  return fetch(VERIFY_ENDPOINT + "?callback=cb&_=" + Date.now() + "&" + qs,
                { method:"GET", redirect:"follow", credentials:"omit", cache:"no-store" })
     .then(r => r.text())
     .then(t => {
@@ -309,21 +269,52 @@ function jsonp(params){
       const m = s.match(/cb\(([\s\S]*)\)\s*;?\s*$/);
       if (m) return JSON.parse(m[1]);
       try { return JSON.parse(s); } catch (e) {}
-      const kind = s.slice(0,60).replace(/\s+/g," ");
-      throw new Error("Server sent " + s.length + " chars, not data. Starts: " + kind);
+      throw new Error("Server sent " + s.length + " chars, not data. Starts: " + s.slice(0,60).replace(/\s+/g," "));
     });
 }
 
+/* ---------- integrity watch ---------- */
+function banner(){
+  const bits = [];
+  if (switches) bits.push(`LEFT THE TEST ${switches}\u00D7`);
+  if (copyTries) bits.push(`COPY BLOCKED ${copyTries}\u00D7`);
+  if (!bits.length) return;
+  const al = $("alarm");
+  al.classList.remove("hide");
+  al.textContent = bits.join("  \u00B7  ") + `  \u00B7  PENALTY \u2212${switches + copyTries}`;
+}
+function flagAway(){
+  if (!running || awayLock) return;
+  awayLock = true; setTimeout(()=>{ awayLock = false; }, 1500);
+  switches++; banner();
+}
+function flagCopy(){
+  if (!running || copyLock) return;
+  copyLock = true; setTimeout(()=>{ copyLock = false; }, 800);
+  copyTries++; banner();
+}
+document.addEventListener("visibilitychange", ()=>{ if (document.hidden) flagAway(); });
+window.addEventListener("blur", flagAway);
+["copy","cut","selectstart","dragstart"].forEach(ev =>
+  document.addEventListener(ev, e => { if (running){ e.preventDefault(); flagCopy(); } }));
+document.addEventListener("contextmenu", e => { if (running) e.preventDefault(); });
+document.addEventListener("keydown", e => {
+  if (!running) return;
+  const k = (e.key || "").toLowerCase(), mod = e.ctrlKey || e.metaKey;
+  if (mod && ["c","x","a","s","p","u"].indexOf(k) > -1){ e.preventDefault(); flagCopy(); }
+  if (mod && e.shiftKey && ["i","j","c"].indexOf(k) > -1) e.preventDefault();
+  if (k === "f12") e.preventDefault();
+});
+
+/* ---------- verification ---------- */
 $("sendCode").onclick = () => {
   const v = $("mail").value.trim().toLowerCase();
   const err = $("mailErr");
   if (!v.endsWith("@" + ALLOWED_DOMAIN)){ err.textContent = `USE YOUR @${ALLOWED_DOMAIN.toUpperCase()} ADDRESS`; return; }
   email = v;
-  // The email is sent server-side whether or not the reply reaches us,
-  // so move straight to the code step instead of blocking on a slow round trip.
-  jsonp({action:"send", email:v})
+  call({action:"send", email:v})
     .then(r => { if (r && !r.ok && r.error) $("codeErr").textContent = String(r.error).toUpperCase(); })
-    .catch(() => {});
+    .catch(()=>{});
   $("stepEmail").classList.add("hide");
   $("stepCode").classList.remove("hide");
   $("codeSent").innerHTML = "Code sent to <b>" + v + "</b>. It can take up to a minute, and it may land in your spam folder.";
@@ -332,16 +323,14 @@ $("sendCode").onclick = () => {
 };
 
 $("checkCode").onclick = async () => {
-  const c = $("code").value.trim();
-  const err = $("codeErr");
+  const c = $("code").value.trim(), err = $("codeErr");
   if (!/^\d{6}$/.test(c)){ err.textContent = "ENTER THE SIX DIGITS"; return; }
   err.textContent = "CHECKING...";
   $("checkCode").disabled = true;
   try{
-    const r = await jsonp({action:"verify", email:email, code:c});
+    const r = await call({action:"verify", email:email, code:c});
     if (r && r.ok){
-      token = r.token || "";
-      name = r.name || email.split("@")[0];
+      token = r.token || ""; name = r.name || email.split("@")[0];
       $("gate").classList.add("hide");
       $("start").classList.remove("hide");
       $("mastSub").textContent = email;
@@ -360,28 +349,30 @@ $("backEmail").onclick = () => {
 };
 $("mail").addEventListener("keydown", e => { if (e.key === "Enter") $("sendCode").click(); });
 $("code").addEventListener("keydown", e => { if (e.key === "Enter") $("checkCode").click(); });
+$("gate").classList.remove("hide");
 
-if (VERIFY_ENDPOINT) $("gate").classList.remove("hide");
-else $("start").classList.remove("hide");
+/* ---------- run ---------- */
+$("go").onclick = async () => {
+  $("go").disabled = true;
+  const note = $("privacyNote");
+  note.textContent = "Building your paper...";
+  try{
+    const r = await call({action:"start", email:email, token:token});
+    if (!r || !r.ok){ note.textContent = ((r && r.error) || "Could not start.").toUpperCase(); $("go").disabled = false; return; }
+    Q = r.qs; session = r.session;
+  }catch(e){ note.textContent = "FAILED: " + (e && e.message ? e.message : e); $("go").disabled = false; return; }
 
-$("go").onclick = () => {
-  if (!VERIFY_ENDPOINT) name = $("who").value.trim() || "Unnamed";
-  seed = (Date.now() ^ Math.floor(Math.random()*1e9)) | 0;
-  const paper = paperFromSeed(seed);
-  if (!paper){ alert("Could not build a paper. Please reload and try again."); return; }
-  Q = paper;
-  idx = 0; answers = []; spent = []; switches = 0;
+  idx = 0; answers = []; spent = []; switches = 0; copyTries = 0;
   $("alarm").classList.add("hide");
   $("start").classList.add("hide");
   $("done").classList.add("hide");
   $("quiz").classList.remove("hide");
-  $("serial").innerHTML = "Paper no.<br>" + String(seed >>> 0).slice(0,8);
-  running = true;
+  $("serial").innerHTML = "Paper<br>" + session.slice(0,8).toUpperCase();
   document.body.classList.add("locked");
+  running = true;
   $("ticks").innerHTML = Q.map(()=>'<div class="tick"></div>').join("");
   show();
 };
-$("who").addEventListener("keydown", e => { if (e.key === "Enter") $("go").click(); });
 
 function paintTicks(){
   const els = document.querySelectorAll(".tick");
@@ -437,94 +428,81 @@ function advance(){
   if (idx < Q.length) show(); else finish();
 }
 
-function finish(){
+const fmt = s => `${Math.floor(s/60)}:${String(Math.round(s)%60).padStart(2,"0")}`;
+const tone = label => (label === "Exceptional" || label === "Strong") ? "var(--olive)"
+                    : label === "Average" ? "var(--leather)" : "var(--red)";
+
+async function finish(){
   running = false;
   document.body.classList.remove("locked");
   clearInterval(tick);
   $("quiz").classList.add("hide");
   $("done").classList.remove("hide");
   window.scrollTo(0,0);
+  $("whoDone").textContent = email + " \u00B7 Result";
+  $("pts").textContent = "\u00B7\u00B7";
+  $("penaltyLine").textContent = "Marking your paper...";
 
-  const raw = answers.reduce((n,a,i)=> n + (a === Q[i].a ? 1 : 0), 0);
-  const penalty = (switches + copyTries) * SWITCH_PENALTY;
-  const finalScore = Math.max(0, raw - penalty);
-  const band = bandFor(finalScore);
+  const ansStr = answers.map(a => (a === null || a === undefined) ? "-" : String(a)).join("");
+  let r = null;
+  try{
+    r = await call({action:"submit", email:email, token:token, session:session,
+      ans:ansStr, times:spent.join(","), switches:switches, copies:copyTries,
+      time:spent.reduce((a,b)=>a+b,0)});
+  }catch(e){
+    $("penaltyLine").textContent = "COULD NOT SUBMIT: " + (e && e.message ? e.message : e);
+    return;
+  }
+  if (!r || !r.ok){ $("penaltyLine").textContent = ((r && r.error) || "Could not submit.").toUpperCase(); return; }
 
-  $("pts").textContent = finalScore;
-  $("ptsOf").textContent = "/" + Q.length;
-  $("whoDone").textContent = (VERIFY_ENDPOINT ? email : name) + " \u00B7 Result";
-  $("stamp").firstChild.nodeValue = band[1].toUpperCase();
-  $("stampSub").textContent = band[2].toUpperCase();
-  $("stamp").style.color = band[3] === "var(--verd)" ? "var(--olive)" : band[3] === "var(--brass)" ? "var(--leather)" : "var(--red)";
-  $("stamp").style.borderColor = $("stamp").style.color;
-  $("stamp").style.boxShadow = "inset 0 0 0 1px " + $("stamp").style.color;
+  $("pts").textContent = r.score;
+  $("ptsOf").textContent = "/" + r.total;
+  $("stamp").firstChild.nodeValue = r.band[0].toUpperCase();
+  $("stampSub").textContent = r.band[1].toUpperCase();
+  const col = tone(r.band[0]);
+  $("stamp").style.color = col;
+  $("stamp").style.borderColor = col;
+  $("stamp").style.boxShadow = "inset 0 0 0 1px " + col;
+
   const why = [];
   if (switches) why.push(`left the test ${switches} time${switches>1?"s":""}`);
   if (copyTries) why.push(`${copyTries} blocked copy attempt${copyTries>1?"s":""}`);
-  $("penaltyLine").textContent = penalty
-    ? `${raw} correct, minus ${penalty} for ` + why.join(" and ")
-    : `${raw} correct \u00B7 nothing flagged`;
+  $("penaltyLine").textContent = r.penalty
+    ? `${r.raw} correct, minus ${r.penalty} for ` + why.join(" and ")
+    : `${r.raw} correct \u00B7 nothing flagged`;
+  $("saveNote").textContent = "Result saved";
 
   const secs = {};
-  Q.forEach((q,i)=>{
+  r.review.forEach(q => {
     if (!secs[q.s]) secs[q.s] = {n:0,c:0,t:0};
-    secs[q.s].n++;
-    secs[q.s].t += spent[i];
-    if (answers[i] === q.a) secs[q.s].c++;
+    secs[q.s].n++; secs[q.s].t += q.spent;
+    if (q.ok) secs[q.s].c++;
   });
   $("secTable").innerHTML = Object.keys(secs).map(k=>{
     const v = secs[k];
     return `<tr><td>${k}</td><td class="n" style="text-align:right">${v.c} / ${v.n}</td><td class="n" style="text-align:right">${fmt(v.t)}</td></tr>`;
   }).join("")
-    + `<tr><td><b>Total correct</b></td><td class="n" style="text-align:right"><b>${raw} / ${Q.length}</b></td>`
-    + `<td class="n" style="text-align:right"><b>${fmt(spent.reduce((a,b)=>a+b,0))}</b></td></tr>`;
+    + `<tr><td><b>Total correct</b></td><td class="n" style="text-align:right"><b>${r.raw} / ${r.total}</b></td>`
+    + `<td class="n" style="text-align:right"><b>${fmt(r.review.reduce((a,q)=>a+q.spent,0))}</b></td></tr>`;
 
-  $("review").innerHTML = Q.map((q,i)=>{
-    const a = answers[i], ok = a === q.a;
-    const given = (a === null || a === undefined) ? "No answer, ran out of time" : `${"ABCD"[a]}) ${q.o[a]}`;
-    return `<div class="rev ${ok?"good":"bad"}">
-      <span class="tag ${ok?"good":"bad"}">${ok?"Correct":"Missed"} &middot; Q${String(i+1).padStart(2,"0")} &middot; ${q.s} &middot; ${fmt(spent[i])}</span>
+  $("review").innerHTML = r.review.map((q,i)=>{
+    const given = (q.given === null || q.given === undefined) ? "No answer, ran out of time" : `${"ABCD"[q.given]}) ${q.o[q.given]}`;
+    return `<div class="rev ${q.ok?"good":"bad"}">
+      <span class="tag ${q.ok?"good":"bad"}">${q.ok?"Correct":"Missed"} &middot; Q${String(i+1).padStart(2,"0")} &middot; ${q.s} &middot; ${fmt(q.spent)}</span>
       <h4>${q.q}</h4>
       <p>Your answer: ${given}</p>
-      ${ok?"":`<p><b>Correct: ${"ABCD"[q.a]}) ${q.o[q.a]}</b></p>`}
+      ${q.ok?"":`<p><b>Correct: ${"ABCD"[q.a]}) ${q.o[q.a]}</b></p>`}
       <p class="why">${q.w}</p>
     </div>`;
   }).join("");
-
-  save(raw, penalty, finalScore);
 }
-const fmt = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
 
 $("again").onclick = () => {
   $("done").classList.add("hide");
   $("start").classList.remove("hide");
+  $("go").disabled = false;
+  $("privacyNote").textContent = "Recorded against " + email;
   $("serial").innerHTML = "Form AR-20<br>Rev. 2026";
   window.scrollTo(0,0);
 };
-
-async function save(raw, penalty, finalScore){
-  const ansStr = answers.map(a => (a === null || a === undefined) ? "-" : String(a)).join("");
-  const record = {
-    name:name, email:email, seed:seed, ans:ansStr, times:spent.join(","),
-    raw:raw, penalty:penalty, score:finalScore, total:Q.length,
-    switches:switches, time:spent.reduce((a,b)=>a+b,0),
-    when:new Date().toISOString()
-  };
-  if (VERIFY_ENDPOINT){
-    $("saveNote").textContent = "Saving...";
-    try{
-      await jsonp({action:"submit", email:email, token:token, seed:seed, ans:ansStr,
-        times:record.times, raw:raw, penalty:penalty, score:finalScore,
-        total:Q.length, switches:switches, copies:copyTries, time:record.time});
-      $("saveNote").textContent = "Result saved";
-    }catch(e){ $("saveNote").textContent = "Not saved \u2014 screenshot this page"; }
-    return;
-  }
-  try{
-    const all = JSON.parse(localStorage.getItem("apt_results") || "[]");
-    all.push(record);
-    localStorage.setItem("apt_results", JSON.stringify(all));
-    $("saveNote").textContent = "Saved on this device";
-  }catch(e){}
-}
 </script>
