@@ -138,17 +138,15 @@
 
 </div>
 
-<script src="engine.js"></script>
 <script>
 const ENDPOINT = "https://script.google.com/macros/s/AKfycbw3CERsTbFcVYDY3tD6wmhE6hT7t2nJJf02oWQULVjtMpMsV6nTlim33-9HoxTlRhgZ/exec";
 
 const $ = id => document.getElementById(id);
 let rows = [], adminKey = "", sortKey = "score", sortDir = -1;
 
-function jsonp(params){
-  const base = (typeof VERIFY_ENDPOINT !== "undefined") ? VERIFY_ENDPOINT : ENDPOINT;
+function call(params){
   const qs = Object.keys(params).map(k => encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join("&");
-  return fetch(base + "?callback=cb&_=" + Date.now() + "&" + qs,
+  return fetch(ENDPOINT + "?callback=cb&_=" + Date.now() + "&" + qs,
                { method:"GET", redirect:"follow", credentials:"omit", cache:"no-store" })
     .then(r => r.text())
     .then(t => {
@@ -156,14 +154,14 @@ function jsonp(params){
       const m = s.match(/cb\(([\s\S]*)\)\s*;?\s*$/);
       if (m) return JSON.parse(m[1]);
       try { return JSON.parse(s); } catch (e) {}
-      const kind = s.slice(0,60).replace(/\s+/g," ");
-      throw new Error("Server sent " + s.length + " chars, not data. Starts: " + kind);
+      throw new Error("Server sent " + s.length + " chars, not data. Starts: " + s.slice(0,60).replace(/\s+/g," "));
     });
 }
 
 const fmt = s => `${Math.floor(s/60)}:${String(Math.round(s)%60).padStart(2,"0")}`;
 const esc = s => String(s == null ? "" : s).replace(/[<>&"]/g, c => ({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;"}[c]));
-const tone = b => b[3] === "var(--verd)" ? "var(--olive)" : b[3] === "var(--brass)" ? "var(--leather)" : "var(--red)";
+const tone = label => (label === "Exceptional" || label === "Strong") ? "var(--olive)"
+                    : label === "Average" ? "var(--leather)" : "var(--red)";
 
 $("open").onclick = async () => {
   adminKey = $("key").value.trim();
@@ -176,7 +174,7 @@ $("refresh").onclick = load;
 
 async function load(){
   try{
-    const r = await jsonp({action:"admin", key:adminKey});
+    const r = await call({action:"admin", key:adminKey});
     if (!r || !r.ok){ $("keyErr").textContent = ((r && r.error) || "Wrong key.").toUpperCase(); return; }
     rows = r.rows || [];
     $("login").classList.add("hide");
@@ -196,17 +194,17 @@ function render(){
   const n = rows.length;
   const avg = rows.reduce((a,r)=>a+Number(r.score),0)/n;
   const top = Math.max.apply(null, rows.map(r=>Number(r.score)));
-  const flagged = rows.filter(r=>Number(r.switches)>0).length;
+  const flagged = rows.filter(r=>Number(r.switches)+Number(r.copies||0)>0).length;
   $("stats").innerHTML = `
     <div class="stat"><b>${n}</b><span>Completed</span></div>
     <div class="stat"><b>${avg.toFixed(1)}</b><span>Average score</span></div>
     <div class="stat"><b>${top}</b><span>Highest</span></div>
-    <div class="stat"><b style="color:${flagged?"var(--red)":"inherit"}">${flagged}</b><span>Left the tab</span></div>`;
+    <div class="stat"><b style="color:${flagged?"var(--red)":"inherit"}">${flagged}</b><span>Flagged</span></div>`;
 
   const sorted = rows.slice().sort((a,b)=>{
     let x = a[sortKey], y = b[sortKey];
     if (sortKey === "when"){ x = new Date(x); y = new Date(y); }
-    else if (sortKey !== "email"){ x = Number(x); y = Number(y); }
+    else if (sortKey !== "email" && sortKey !== "band"){ x = Number(x); y = Number(y); }
     return x > y ? sortDir : x < y ? -sortDir : 0;
   });
 
@@ -215,23 +213,22 @@ function render(){
       <th data-k="email">Candidate</th>
       <th data-k="score" style="text-align:right">Score</th>
       <th data-k="raw" style="text-align:right" class="hcol">Correct</th>
-      <th>Rating</th>
+      <th data-k="band">Rating</th>
       <th data-k="switches" style="text-align:right">Left tab</th>
+      <th data-k="copies" style="text-align:right" class="hcol">Copy</th>
       <th data-k="time" style="text-align:right" class="hcol">Time</th>
       <th data-k="when" style="text-align:right" class="hcol">Taken</th>
     </tr></thead><tbody>` +
-    sorted.map(r=>{
-      const band = bandFor(Number(r.score));
-      return `<tr class="row" data-id="${esc(r.id)}">
-        <td>${esc(r.email || r.name || "Unnamed")}</td>
+    sorted.map(r=>`<tr class="row" data-id="${esc(r.id)}">
+        <td>${esc(r.email)}</td>
         <td class="n" style="text-align:right"><b>${r.score}</b><span class="muted">/${r.total}</span></td>
         <td class="n" style="text-align:right">${r.raw}</td>
-        <td><span class="pill" style="color:${tone(band)}">${band[1]}</span></td>
+        <td><span class="pill" style="color:${tone(r.band)}">${r.band}</span></td>
         <td class="n" style="text-align:right">${Number(r.switches) ? `<span class="flag">${r.switches}</span>` : "0"}</td>
+        <td class="n" style="text-align:right">${Number(r.copies) ? `<span class="flag">${r.copies}</span>` : "0"}</td>
         <td class="n" style="text-align:right">${fmt(Number(r.time))}</td>
         <td class="n" style="text-align:right">${new Date(r.when).toLocaleDateString()}</td>
-      </tr>`;
-    }).join("") + `</tbody></table>`;
+      </tr>`).join("") + `</tbody></table>`;
 
   document.querySelectorAll("th[data-k]").forEach(th => th.onclick = () => {
     const k = th.dataset.k;
@@ -241,35 +238,35 @@ function render(){
   document.querySelectorAll("tr.row").forEach(tr => tr.onclick = () => openDetail(tr.dataset.id));
 }
 
-function openDetail(id){
-  const r = rows.find(x => String(x.id) === String(id));
-  if (!r) return;
-  const paper = paperFromSeed(Number(r.seed));
-  if (!paper){ alert("Could not rebuild this paper."); return; }
-  const ans = String(r.ans || "").split("");
-  const times = String(r.times || "").split(",").map(Number);
-  const band = bandFor(Number(r.score));
-
+async function openDetail(id){
   $("list").classList.add("hide");
   $("detail").classList.remove("hide");
   window.scrollTo(0,0);
+  $("dWho").textContent = "Loading paper...";
+  $("dScore").textContent = ""; $("dStamp").textContent = "";
+  $("dMeta").textContent = ""; $("dSections").innerHTML = ""; $("dReview").innerHTML = "";
+  let r;
+  try{ r = await call({action:"review", key:adminKey, id:id}); }
+  catch(e){ $("dWho").textContent = "FAILED: " + (e && e.message ? e.message : e); return; }
+  if (!r || !r.ok){ $("dWho").textContent = ((r && r.error) || "Could not load.").toUpperCase(); return; }
 
-  $("dWho").textContent = r.email || r.name || "Unnamed";
+  $("dWho").textContent = r.email;
   $("dScore").innerHTML = `${r.score}<small>/${r.total}</small>`;
-  $("dStamp").innerHTML = band[1].toUpperCase();
-  $("dStamp").style.color = tone(band);
-  $("dMeta").innerHTML =
-    `${r.raw} correct` +
-    (Number(r.penalty) ? ` &middot; <span style="color:var(--red)">minus ${r.penalty} for leaving the tab ${r.switches} time${Number(r.switches)>1?"s":""}</span>` : ` &middot; no tab switches`) +
+  $("dStamp").textContent = r.band[0].toUpperCase();
+  $("dStamp").style.color = tone(r.band[0]);
+  const flags = [];
+  if (Number(r.switches)) flags.push(`left the tab ${r.switches}\u00D7`);
+  if (Number(r.copies)) flags.push(`${r.copies} copy attempt${Number(r.copies)>1?"s":""}`);
+  $("dMeta").innerHTML = `${r.raw} correct` +
+    (Number(r.penalty) ? ` &middot; <span style="color:var(--red)">minus ${r.penalty} for ${flags.join(" and ")}</span>` : " &middot; nothing flagged") +
     ` &middot; ${fmt(Number(r.time))} total &middot; ${new Date(r.when).toLocaleString()}` +
     ` &middot; paper <span class="seq">${r.seed}</span>`;
 
   const secs = {};
-  paper.forEach((q,i)=>{
+  r.review.forEach(q => {
     if (!secs[q.s]) secs[q.s] = {n:0,c:0,t:0};
-    secs[q.s].n++;
-    secs[q.s].t += (times[i] || 0);
-    if (ans[i] !== "-" && Number(ans[i]) === q.a) secs[q.s].c++;
+    secs[q.s].n++; secs[q.s].t += q.spent;
+    if (q.ok) secs[q.s].c++;
   });
   $("dSections").innerHTML = Object.keys(secs).map(k=>{
     const v = secs[k], p = Math.round(v.c/v.n*100);
@@ -279,21 +276,17 @@ function openDetail(id){
       <td class="n muted" style="text-align:right">${fmt(v.t)}</td></tr>`;
   }).join("");
 
-  $("dReview").innerHTML = paper.map((q,i)=>{
-    const given = ans[i] === "-" || ans[i] === undefined ? null : Number(ans[i]);
-    const ok = given === q.a;
-    return `<div class="rev ${ok?"good":"bad"}">
-      <span class="tag ${ok?"good":"bad"}">${given===null?"No answer":ok?"Correct":"Missed"} &middot; Q${String(i+1).padStart(2,"0")} &middot; ${q.s} &middot; ${fmt(times[i]||0)} of ${fmt(q.t)}</span>
+  $("dReview").innerHTML = r.review.map((q,i)=>`<div class="rev ${q.ok?"good":"bad"}">
+      <span class="tag ${q.ok?"good":"bad"}">${q.given===null?"No answer":q.ok?"Correct":"Missed"} &middot; Q${String(i+1).padStart(2,"0")} &middot; ${q.s} &middot; ${fmt(q.spent)} of ${fmt(q.t)}</span>
       <h4>${q.q}</h4>
       ${q.o.map((o,j)=>{
-        const isC = j === q.a, isG = j === given;
+        const isC = j === q.a, isG = j === q.given;
         const cls = isC && isG ? "both" : isC ? "correct" : isG ? "chosen" : "";
         const mark = isC && isG ? "\u2713 chosen, correct" : isC ? "\u2713 correct answer" : isG ? "\u2717 their answer" : "";
         return `<div class="opt ${cls}">${"ABCD"[j]}) ${o}${mark ? "  \u2014  " + mark : ""}</div>`;
       }).join("")}
       <p class="why">${q.w}</p>
-    </div>`;
-  }).join("");
+    </div>`).join("");
 }
 
 $("back").onclick = () => {
@@ -303,10 +296,9 @@ $("back").onclick = () => {
 };
 
 $("csv").onclick = () => {
-  const head = ["Email","Score","Out of","Correct","Penalty","Tab switches","Rating","Time (sec)","Taken","Paper seed","Answers"];
-  const body = rows.map(r => [
-    r.email || r.name, r.score, r.total, r.raw, r.penalty, r.switches,
-    bandFor(Number(r.score))[1], r.time, r.when, r.seed, r.ans
+  const head = ["Email","Score","Out of","Correct","Penalty","Tab switches","Copy attempts","Rating","Time (sec)","Taken","Paper seed"];
+  const body = rows.map(r => [r.email, r.score, r.total, r.raw, r.penalty, r.switches, r.copies,
+    r.band, r.time, r.when, r.seed
   ].map(v => `"${String(v == null ? "" : v).replace(/"/g,'""')}"`).join(","));
   const blob = new Blob([head.join(",") + "\n" + body.join("\n")], {type:"text/csv"});
   const a = document.createElement("a");
