@@ -1,0 +1,288 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Results Dashboard</title>
+<style>
+  :root{
+    --ink:#10151C; --slate:#1B2430; --steel:#2C3847; --paper:#ECEAE4;
+    --mute:#8A94A3; --brass:#C08A2E; --signal:#C4553B; --verd:#4E8C7D;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--ink);color:var(--paper);font-family:var(--sans);line-height:1.5;
+    -webkit-font-smoothing:antialiased;padding:24px 16px 80px}
+  .wrap{max-width:1000px;margin:0 auto}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass)}
+  h1{font-family:var(--mono);font-size:clamp(22px,4vw,30px);margin:6px 0 4px;font-weight:600}
+  .rule{height:1px;background:var(--steel);border:0;margin:20px 0}
+  .muted{color:var(--mute)}
+  .panel{background:var(--slate);border:1px solid var(--steel);border-radius:2px;padding:24px}
+  .btn{background:var(--brass);color:var(--ink);border:0;border-radius:2px;padding:12px 24px;
+    font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+  .btn:hover{filter:brightness(1.12)}
+  .btn.ghost{background:transparent;color:var(--mute);border:1px solid var(--steel)}
+  .btn.ghost:hover{color:var(--paper);border-color:var(--mute);filter:none}
+  :focus-visible{outline:2px solid var(--brass);outline-offset:3px}
+  label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--mute);margin-bottom:8px}
+  input{width:100%;background:var(--ink);border:1px solid var(--steel);color:var(--paper);
+    padding:13px 14px;font-size:16px;font-family:var(--sans);border-radius:2px}
+  input:focus{border-color:var(--brass);outline:none}
+  .err{color:var(--signal);font-size:13px;margin-top:10px;min-height:18px}
+  .stats{display:flex;gap:26px;flex-wrap:wrap;margin-bottom:6px}
+  .stat b{display:block;font-family:var(--mono);font-size:30px;line-height:1.1}
+  .stat span{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);
+    text-align:left;font-weight:400;padding:9px 8px;border-bottom:1px solid var(--steel);cursor:pointer;user-select:none}
+  th:hover{color:var(--paper)}
+  td{padding:11px 8px;border-bottom:1px solid var(--steel)}
+  tr.row{cursor:pointer}
+  tr.row:hover td{background:#212C3A}
+  .pill{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    padding:3px 8px;border-radius:2px;border:1px solid currentColor;white-space:nowrap}
+  .flag{color:var(--signal);font-family:var(--mono);font-size:12px}
+  .rev{border-left:2px solid var(--steel);padding:12px 0 12px 16px;margin-bottom:14px}
+  .rev.good{border-left-color:var(--verd)}
+  .rev.bad{border-left-color:var(--signal)}
+  .rev h4{margin:0 0 8px;font-size:14.5px;font-weight:600;font-family:var(--serif)}
+  .rev .opt{font-family:var(--mono);font-size:12.5px;padding:3px 0;color:var(--mute)}
+  .rev .opt.correct{color:var(--verd)}
+  .rev .opt.chosen{color:var(--signal)}
+  .rev .opt.both{color:var(--verd)}
+  .tag{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+  .tag.good{color:var(--verd)}
+  .tag.bad{color:var(--signal)}
+  .why{color:var(--mute);font-size:13px;margin:8px 0 0}
+  .seq{font-family:var(--mono);letter-spacing:.04em}
+  .hide{display:none}
+  @media (max-width:640px){
+    .panel{padding:16px}
+    td,th{padding:8px 5px;font-size:13px}
+    .hcol{display:none}
+  }
+</style>
+
+<div class="wrap">
+
+  <section id="login">
+    <div class="eyebrow">Private</div>
+    <h1>Results Dashboard</h1>
+    <p class="muted" style="margin-top:0">Enter the admin key set in your Apps Script.</p>
+    <hr class="rule">
+    <div class="panel" style="max-width:460px">
+      <label for="key">Admin key</label>
+      <input id="key" type="password" placeholder="Admin key" autocomplete="off">
+      <div class="err" id="keyErr"></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:8px">
+        <button class="btn" id="open">Open dashboard</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="list" class="hide">
+    <div class="eyebrow">Private</div>
+    <h1>Results Dashboard</h1>
+    <hr class="rule">
+    <div class="stats" id="stats"></div>
+    <hr class="rule">
+    <div class="panel">
+      <div id="tableBox"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:20px;gap:12px">
+        <button class="btn ghost" id="csv">Download CSV</button>
+        <button class="btn ghost" id="refresh">Refresh</button>
+      </div>
+    </div>
+    <p class="muted" style="font-size:12.5px;margin-top:14px">Click any row to see that candidate's exact paper and every answer they gave.</p>
+  </section>
+
+  <section id="detail" class="hide">
+    <div class="eyebrow" id="dWho"></div>
+    <h1 id="dScore"></h1>
+    <div id="dMeta" class="muted" style="font-size:13.5px"></div>
+    <div style="margin-top:18px"><button class="btn ghost" id="back">Back to all results</button></div>
+    <hr class="rule">
+    <div class="panel" style="margin-bottom:22px"><table><tbody id="dSections"></tbody></table></div>
+    <div class="eyebrow">Their paper, question by question</div>
+    <div id="dReview" style="margin-top:18px"></div>
+  </section>
+
+</div>
+
+<script src="engine.js"></script>
+<script>
+/* Paste the same Apps Script web-app URL used by the test. */
+const ENDPOINT = "";
+
+const $ = id => document.getElementById(id);
+let rows = [], adminKey = "", sortKey = "score", sortDir = -1;
+
+function jsonp(params){
+  return new Promise((resolve, reject)=>{
+    const cb = "cb" + Math.random().toString(36).slice(2,9);
+    const s = document.createElement("script");
+    let done = false;
+    window[cb] = d => { done = true; try{delete window[cb];}catch(e){} s.remove(); resolve(d); };
+    s.onerror = () => { if(done) return; try{delete window[cb];}catch(e){} s.remove(); reject(new Error("network")); };
+    const qs = Object.keys(params).map(k => encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join("&");
+    s.src = ENDPOINT + "?callback=" + cb + "&" + qs;
+    document.body.appendChild(s);
+    setTimeout(()=>{ if(!done){ try{delete window[cb];}catch(e){} s.remove(); reject(new Error("timeout")); } }, 20000);
+  });
+}
+
+const fmt = s => `${Math.floor(s/60)}:${String(Math.round(s)%60).padStart(2,"0")}`;
+const esc = s => String(s == null ? "" : s).replace(/[<>&"]/g, c => ({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;"}[c]));
+
+$("open").onclick = async () => {
+  adminKey = $("key").value.trim();
+  if (!ENDPOINT){ $("keyErr").textContent = "No endpoint configured. Paste your Apps Script URL into ENDPOINT in admin.html."; return; }
+  if (!adminKey){ $("keyErr").textContent = "Enter the admin key."; return; }
+  $("keyErr").textContent = "Loading...";
+  await load();
+};
+$("key").addEventListener("keydown", e => { if (e.key === "Enter") $("open").click(); });
+$("refresh").onclick = load;
+
+async function load(){
+  try{
+    const r = await jsonp({action:"admin", key:adminKey});
+    if (!r || !r.ok){ $("keyErr").textContent = (r && r.error) || "Wrong key."; return; }
+    rows = r.rows || [];
+    $("login").classList.add("hide");
+    $("detail").classList.add("hide");
+    $("list").classList.remove("hide");
+    render();
+  }catch(e){ $("keyErr").textContent = "Could not reach the service."; }
+}
+
+function render(){
+  if (!rows.length){
+    $("stats").innerHTML = "";
+    $("tableBox").innerHTML = '<p class="muted">Nobody has completed the test yet.</p>';
+    return;
+  }
+  const n = rows.length;
+  const avg = rows.reduce((a,r)=>a+Number(r.score),0)/n;
+  const top = Math.max.apply(null, rows.map(r=>Number(r.score)));
+  const flagged = rows.filter(r=>Number(r.switches)>0).length;
+  $("stats").innerHTML = `
+    <div class="stat"><b>${n}</b><span>Completed</span></div>
+    <div class="stat"><b>${avg.toFixed(1)}</b><span>Average score</span></div>
+    <div class="stat"><b>${top}</b><span>Highest</span></div>
+    <div class="stat"><b style="color:${flagged?"var(--signal)":"var(--paper)"}">${flagged}</b><span>Left the tab</span></div>`;
+
+  const sorted = rows.slice().sort((a,b)=>{
+    let x = a[sortKey], y = b[sortKey];
+    if (sortKey === "when"){ x = new Date(x); y = new Date(y); }
+    else if (sortKey !== "email"){ x = Number(x); y = Number(y); }
+    return x > y ? sortDir : x < y ? -sortDir : 0;
+  });
+
+  $("tableBox").innerHTML = `<table>
+    <thead><tr>
+      <th data-k="email">Candidate</th>
+      <th data-k="score" style="text-align:right">Score</th>
+      <th data-k="raw" style="text-align:right" class="hcol">Correct</th>
+      <th>Rating</th>
+      <th data-k="switches" style="text-align:right">Left tab</th>
+      <th data-k="time" style="text-align:right" class="hcol">Time</th>
+      <th data-k="when" style="text-align:right" class="hcol">Taken</th>
+    </tr></thead><tbody>` +
+    sorted.map(r=>{
+      const band = bandFor(Number(r.score));
+      return `<tr class="row" data-id="${esc(r.id)}">
+        <td>${esc(r.email || r.name || "Unnamed")}</td>
+        <td style="text-align:right"><b>${r.score}</b> <span class="muted">/ ${r.total}</span></td>
+        <td style="text-align:right" class="hcol">${r.raw}</td>
+        <td><span class="pill" style="color:${band[3]}">${band[1]}</span></td>
+        <td style="text-align:right">${Number(r.switches) ? `<span class="flag">${r.switches}</span>` : "0"}</td>
+        <td style="text-align:right" class="hcol">${fmt(Number(r.time))}</td>
+        <td style="text-align:right" class="hcol">${new Date(r.when).toLocaleDateString()}</td>
+      </tr>`;
+    }).join("") + `</tbody></table>`;
+
+  document.querySelectorAll("th[data-k]").forEach(th => th.onclick = () => {
+    const k = th.dataset.k;
+    if (sortKey === k) sortDir = -sortDir; else { sortKey = k; sortDir = -1; }
+    render();
+  });
+  document.querySelectorAll("tr.row").forEach(tr => tr.onclick = () => openDetail(tr.dataset.id));
+}
+
+function openDetail(id){
+  const r = rows.find(x => String(x.id) === String(id));
+  if (!r) return;
+  const paper = paperFromSeed(Number(r.seed));
+  if (!paper){ alert("Could not rebuild this paper."); return; }
+  const ans = String(r.ans || "").split("");
+  const times = String(r.times || "").split(",").map(Number);
+  const band = bandFor(Number(r.score));
+
+  $("list").classList.add("hide");
+  $("detail").classList.remove("hide");
+  window.scrollTo(0,0);
+
+  $("dWho").textContent = r.email || r.name || "Unnamed";
+  $("dScore").innerHTML = `${r.score} / ${r.total} <span style="color:${band[3]};font-size:16px">${band[1]}</span>`;
+  $("dMeta").innerHTML =
+    `${r.raw} correct` +
+    (Number(r.penalty) ? `, minus ${r.penalty} for leaving the tab ${r.switches} time${Number(r.switches)>1?"s":""}` : `, no tab switches`) +
+    ` &middot; ${fmt(Number(r.time))} total &middot; ${new Date(r.when).toLocaleString()}` +
+    ` &middot; <span class="seq">paper ${r.seed}</span>`;
+
+  const secs = {};
+  paper.forEach((q,i)=>{
+    if (!secs[q.s]) secs[q.s] = {n:0,c:0,t:0};
+    secs[q.s].n++;
+    secs[q.s].t += (times[i] || 0);
+    if (ans[i] !== "-" && Number(ans[i]) === q.a) secs[q.s].c++;
+  });
+  $("dSections").innerHTML = Object.keys(secs).map(k=>{
+    const v = secs[k];
+    const pctv = Math.round(v.c/v.n*100);
+    return `<tr><td>${k}</td>
+      <td style="text-align:right">${v.c} / ${v.n}</td>
+      <td style="text-align:right;color:${pctv>=70?"var(--verd)":pctv>=50?"var(--brass)":"var(--signal)"}">${pctv}%</td>
+      <td style="text-align:right" class="muted">${fmt(v.t)}</td></tr>`;
+  }).join("");
+
+  $("dReview").innerHTML = paper.map((q,i)=>{
+    const given = ans[i] === "-" || ans[i] === undefined ? null : Number(ans[i]);
+    const ok = given === q.a;
+    return `<div class="rev ${ok?"good":"bad"}">
+      <span class="tag ${ok?"good":"bad"}">${given===null?"No answer":ok?"Correct":"Missed"} &middot; Q${i+1} &middot; ${q.s} &middot; ${fmt(times[i]||0)} of ${fmt(q.t)}</span>
+      <h4>${q.q}</h4>
+      ${q.o.map((o,j)=>{
+        const isC = j === q.a, isG = j === given;
+        const cls = isC && isG ? "both" : isC ? "correct" : isG ? "chosen" : "";
+        const mark = isC && isG ? "\u2713 chosen, correct" : isC ? "\u2713 correct answer" : isG ? "\u2717 their answer" : "";
+        return `<div class="opt ${cls}">${"ABCD"[j]}) ${o} ${mark ? "&nbsp;&mdash;&nbsp;" + mark : ""}</div>`;
+      }).join("")}
+      <p class="why">${q.w}</p>
+    </div>`;
+  }).join("");
+}
+
+$("back").onclick = () => {
+  $("detail").classList.add("hide");
+  $("list").classList.remove("hide");
+  window.scrollTo(0,0);
+};
+
+$("csv").onclick = () => {
+  const head = ["Email","Score","Out of","Correct","Penalty","Tab switches","Rating","Time (sec)","Taken","Paper seed","Answers"];
+  const body = rows.map(r => [
+    r.email || r.name, r.score, r.total, r.raw, r.penalty, r.switches,
+    bandFor(Number(r.score))[1], r.time, r.when, r.seed, r.ans
+  ].map(v => `"${String(v == null ? "" : v).replace(/"/g,'""')}"`).join(","));
+  const blob = new Blob([head.join(",") + "\n" + body.join("\n")], {type:"text/csv"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "aptitude-results.csv";
+  a.click();
+};
+</script>
