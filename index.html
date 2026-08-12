@@ -526,6 +526,21 @@ function advance(){
 }
 
 const fmt = s => `${Math.floor(s/60)}:${String(Math.round(s)%60).padStart(2,"0")}`;
+
+/* the score climbs rather than simply appearing */
+function countUp(el, target, ms){
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+    el.textContent = target; return;
+  }
+  const started = Date.now();
+  const step = () => {
+    const p = Math.min(1, (Date.now() - started) / ms);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(target * eased);
+    if (p < 1) requestAnimationFrame(step);
+  };
+  step();
+}
 const tone = label => (label === "Exceptional" || label === "Strong") ? "var(--olive)"
                     : label === "Average" ? "var(--leather)" : "var(--red)";
 
@@ -556,9 +571,12 @@ async function finish(){
   }
   if (!r || !r.ok){ $("penaltyLine").textContent = ((r && r.error) || "Could not submit.").toUpperCase(); return; }
 
-  $("pts").textContent = r.score;
+  countUp($("pts"), r.score, 700);
   $("ptsOf").textContent = "/" + r.total;
   $("stamp").firstChild.nodeValue = r.band[0].toUpperCase();
+  $("stamp").classList.remove("land");
+  void $("stamp").offsetWidth;
+  setTimeout(function(){ $("stamp").classList.add("land"); }, 620);
   $("stampSub").textContent = r.band[1].toUpperCase();
   const col = tone(r.band[0]);
   $("stamp").style.color = col;
