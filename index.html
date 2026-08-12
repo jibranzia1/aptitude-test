@@ -463,13 +463,22 @@ document.addEventListener("keydown", e => {
 });
 
 /* ---------- verification ---------- */
+let sending = false;
 $("sendCode").onclick = () => {
+  if (sending) return;                 // one code per click, not one per impatient click
   const v = $("mail").value.trim().toLowerCase();
   const err = $("mailErr");
   if (!v.endsWith("@" + ALLOWED_DOMAIN)){ err.textContent = `USE YOUR @${ALLOWED_DOMAIN.toUpperCase()} ADDRESS`; return; }
+  sending = true;
+  $("sendCode").disabled = true;
   email = v;
   call({action:"send", email:v})
-    .then(r => { if (r && !r.ok && r.error) $("codeErr").textContent = String(r.error).toUpperCase(); })
+    .then(r => {
+      if (r && !r.ok && r.error){
+        $("codeErr").textContent = String(r.error).toUpperCase();
+        sending = false; $("sendCode").disabled = false;
+      }
+    })
     .catch(()=>{});
   $("stepEmail").classList.add("hide");
   $("stepCode").classList.remove("hide");
@@ -502,6 +511,8 @@ $("backEmail").onclick = () => {
   $("stepCode").classList.add("hide");
   $("stepEmail").classList.remove("hide");
   $("codeErr").textContent = "";
+  sending = false;
+  $("sendCode").disabled = false;
 };
 $("mail").addEventListener("keydown", e => { if (e.key === "Enter") $("sendCode").click(); });
 $("code").addEventListener("keydown", e => { if (e.key === "Enter") $("checkCode").click(); });
